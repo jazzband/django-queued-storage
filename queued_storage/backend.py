@@ -3,7 +3,7 @@ import urllib
 from django.core.cache import cache
 from django.core.files.storage import get_storage_class, Storage
 
-from bishop.storages.tasks import SaveToRemoteTask
+from queued_storage.storages.tasks import SaveToRemoteTask
 
 QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX = 'queued_remote_storage_'
 
