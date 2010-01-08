@@ -9,7 +9,26 @@ request for the file will use the remote backend.
 
 This backend requires celery, which is used for the queuing.
 
-Usage
+Example
+----------------------------
+>>>from queued_storage.backend import QueuedRemoteStorage
+>>>storage = QueuedRemoteStorage(local='django.core.files.storage.FileSystemStorage', remote='backends.s3boto.S3BotoStorage')
+>>>storage.save(fname, file)
+>>>storage.url(fname)
+>>>u'/uploads/myfile.jpg'
+>>>storage.using_local(fname)
+<<<True
+>>>storage.using_remote(fname)
+<<<False
+>>>time.sleep(30)
+>>>storage.url(fname)
+>>>u'http://mybucket.s3.amazonaws.com/uploads/myfile.jpg'
+>>>storage.using_local(fname)
+<<<False
+>>>image.storage.using_remote(fname)
+<<<True
+
+Installation
 ----------------------------
 
 1. Make sure celery is installed and running http://ask.github.com/celery/introduction.html
