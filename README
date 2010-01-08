@@ -25,7 +25,7 @@ Example
 >>>u'http://mybucket.s3.amazonaws.com/uploads/myfile.jpg'
 >>>storage.using_local(fname)
 <<<False
->>>image.storage.using_remote(fname)
+>>>storage.using_remote(fname)
 <<<True
 
 Installation
