@@ -66,3 +66,11 @@ class QueuedRemoteStorage(Storage):
     
     def url(self, name):
         return self.get_storage(name).url(name)
+        
+    
+class FileSystemAndS3Backend(QueuedRemoteStorage):
+    def __init__(self, cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX):
+        super(FileSystemAndS3Backend, self).__init__(local='django.core.files.storage.FileSystemStorage',
+                       remote='storages.backends.s3boto.S3BotoStorage', cache_prefix=cache_prefix)
+    
+        
