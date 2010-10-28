@@ -1,0 +1,3 @@
+build/
+dist/
+django_queued_storage.egg-info/
