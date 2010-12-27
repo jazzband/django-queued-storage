@@ -1,3 +1,2 @@
-from django.db import models
+# This file intentionally left empty (needs to be present for test detection).
 
-# Create your models here.
