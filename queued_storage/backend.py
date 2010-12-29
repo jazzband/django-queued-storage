@@ -11,14 +11,26 @@ class QueuedRemoteStorage(Storage):
 
     def __init__(self, local, remote, cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX, task=None):
         self.local_class = local
-        self.local = get_storage_class(self.local_class)()
         self.remote_class = remote
-        self.remote = get_storage_class(self.remote_class)()
         self.cache_prefix = cache_prefix
+        self._local_instance = None
+        self._remote_instance = None
 
         # allow users to override the task that uploads the image to the remote
         # server
         self.task = task or SaveToRemoteTask
+
+    @property
+    def local(self):
+        if self._local_instance is None:
+            self._local_instance = get_storage_class(self.local_class)()
+        return self._local_instance
+
+    @property
+    def remote(self):
+        if self._remote_instance is None:
+            self._remote_instance = get_storage_class(self.remote_class)()
+        return self._remote_instance
 
     def get_storage(self, name):
         cache_result = cache.get(self.get_cache_key(name))
