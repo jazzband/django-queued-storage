@@ -40,8 +40,8 @@ class QueuedRemoteStorage(Storage):
     def using_remote(self, name):
         return self.get_storage(name) is self.remote
 
-    def open(self, name, **kwargs):
-        return self.local.open(name, **kwargs)
+    def open(self, name, *args, **kwargs):
+        return self.get_storage(name).open(name, *args, **kwargs)
 
     def save(self, name, content):
         cache.set(self.get_cache_key(name), False)
