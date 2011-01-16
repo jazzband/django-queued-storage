@@ -20,6 +20,9 @@ class SaveToRemoteTask(Task):
             remote_storage.save(name, local_storage.open(name))
         except:
             # something went wrong while uploading the file, retry
+            logger = self.get_logger(**kwargs)
+            logger.exception("Unable to save '%s' to remote storage. About "
+                    "to retry." % name)
             self.retry([name, local, remote, cache_key], **kwargs)
             return False
 
