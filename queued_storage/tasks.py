@@ -25,7 +25,7 @@ class SaveToRemoteTask(Task):
                     "to retry." % name)
             self.retry([name, local, remote, cache_key], **kwargs)
             return False
-
+    
         cache.set(cache_key, True)
         return True
 

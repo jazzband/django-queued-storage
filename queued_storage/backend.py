@@ -96,3 +96,14 @@ class FileSystemAndS3Backend(QueuedRemoteStorage):
             cache_prefix=cache_prefix
         )
 
+class DelayedUploadStorage(QueuedRemoteStorage):
+
+    def save(self, name, content):
+        cache.set(self.get_cache_key(name), False)
+        name = self.local.save(name, content)
+        return name
+
+    def upload(self, name):
+        self.task.apply(args=(name, self.local_class, self.remote_class, self.get_cache_key(name)))
+        return name
+
