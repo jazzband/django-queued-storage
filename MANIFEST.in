@@ -1,0 +1,3 @@
+include README.*
+include LICENSE
+include queued_storage/tests/test.png
