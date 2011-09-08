@@ -8,10 +8,21 @@ from queued_storage.tasks import SaveToRemoteTask
 QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX = 'queued_remote_storage_'
 
 class QueuedRemoteStorage(Storage):
-    
-    def __init__(self, local, remote, cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX, task=None):
+
+    def __init__(self, local, remote,
+            cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX, task=None,
+            local_args=None, local_kwargs=None, remote_args=None,
+            remote_kwargs=None):
+        self.local_args = local_args or ()
+        self.local_kwargs = local_kwargs or {}
+        self.remote_args = remote_args or ()
+        self.remote_kwargs = remote_kwargs or {}
         self.local_class = local
+        self.local = get_storage_class(self.local_class)(*self.local_args,
+                **self.local_kwargs)
         self.remote_class = remote
+        self.remote = get_storage_class(self.remote_class)(*self.remote_args,
+                **self.remote_kwargs)
         self.cache_prefix = cache_prefix
         self._local_instance = None
         self._remote_instance = None
