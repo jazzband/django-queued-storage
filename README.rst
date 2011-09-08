@@ -1,61 +1,155 @@
 django-queued-storage
-======================
+=====================
 
-This is a storage backend that allows you specify a local and a remote storage
-backend. It will upload locally and then queue up the transfer to your remote
-backend. If any request for the file occurs before the file gets to the remote
-backend your local backend will be used. Once the file has been successfully
-transferred to the remote backend all request for the file will use the remote
-backend.
+This storage backend enables having a local and a remote storage
+backend. It will save any file locally and queue a task to transfer it
+somewhere else.
 
-This backend requires celery_, which is used for the queuing.
+If the file is accessed before it's transferred, the local copy is
+returned.
 
-.. _celery: http://celeryproject.org/
-
-Example
---------
-
-The ``QueuedRemoteStorage`` class can be can be used as a drop-in replacement
-wherever ``django.core.file.storage.Storage`` might otherwise be required. It
-has all the standard methods, along with a couple of extra ones for checking
-if the file has been uploaded to the remote storage or not::
-
-    >>> from queued_storage.backend import QueuedRemoteStorage
-    >>> storage = QueuedRemoteStorage(
-    ... local='django.core.files.storage.FileSystemStorage',
-    ... remote='backends.s3boto.S3BotoStorage')
-    >>> storage.save(fname, file)
-    >>> storage.url(fname)
-    u'/uploads/myfile.jpg'
-    >>> storage.using_local(fname)
-    True
-    >>> storage.using_remote(fname)
-    False
-    >>> time.sleep(30)
-    >>> storage.url(fname)
-    u'http://mybucket.s3.amazonaws.com/uploads/myfile.jpg'
-    >>> storage.using_local(fname)
-    False
-    >>> storage.using_remote(fname)
-    True
-
-At this point, the local copy of the file could be removed, as all references
-will be to the remote copy.
-
-Typically, however, you won't need to use the class quite this directly.
-Instead, pass in an instance of the class as the ``storage`` argument to
-``django.db.models.FileField`` or ``django.db.models.ImageField`` and it will
-be used transparently.
+The default tasks use `Celery <http://celeryproject.org/>`_ for queing
+transfer tasks but is agnostic about your choice.
 
 Installation
+------------
+
+::
+
+    pip install django-queued-storage
+
+Configuration
 -------------
 
-1. Make sure celery is installed and running: http://ask.github.com/celery/introduction.html
+-  Follow the configuration instructions for
+   `django-celery <https://github.com/ask/django-celery>`_
+-  Set up a `caching
+   backend <https://docs.djangoproject.com/en/1.3/topics/cache/#setting-up-the-cache>`_
+-  Add ``queued_storage`` to your ``INSTALLED_APPS`` tuple
 
-2. Make sure you have a cache backend set up.
+Usage
+-----
 
-3. Add the backend to the storage argument of a FileField::
-		
-		image = ImageField(storage=QueuedRemoteStorage(local='django.core.files.storage.FileSystemStorage',
-		                   remote='backends.s3boto.S3BotoStorage'), upload_to='uploads')
+The ``QueuedRemoteStorage`` can be used as a drop-in replacement
+wherever ``django.core.file.storage.Storage`` might otherwise be
+required.
+
+This example is using
+`django-storages <http://code.welldev.org/django-storages/>`_ for the
+remote backend:
+
+::
+
+    from django.db import models
+    from queued_storage.storage import QueuedRemoteStorage
+
+    class MyModel(models.Model):
+        image = ImageField(storage = QueuedRemoteStorage(
+            local = 'django.core.files.storage.FileSystemStorage',
+            remote = 'storages.backends.s3boto.S3BotoStorage'))
+
+Backends
+--------
+
+-  ``queued_storage.backend.QueuedRemoteStorage``:
+    Base class for queued storages. You can use this to specify your own
+   backends.
+
+-  ``queued_storage.backend.DoubleFilesystemStorage``:
+    Used for testing, but can be handy if you want uploaded files to be
+   stored in two places. Example:
+
+   ::
+
+       image = ImageField(
+           storage = DoubleFilesystemStorage(
+               local_kwargs = {'location': '/backup'},
+               remote_kwargs = {'location': settings.MEDIA_ROOT}))
+
+-  ``queued_storage.backend.S3Storage``:
+    Shortcut for the above example.
+
+   ::
+
+       image = ImageField(storage = S3Storage())
+
+-  ``queued_storage.backend.DelayedStorage``:
+    This backend does *not* transfer files to the remote location
+   automatically.
+
+   ::
+
+       image = ImageField(storage = DelayedStorage(
+           local = 'django.core.files.storage.FileSystemStorage',
+           remote = 'storages.backends.s3boto.S3BotoStorage'))
+
+       >>> m = MyModel(image = File(open('image.png')))
+       >>> m.save()
+       >>> # File is saved locally
+       >>> m.file.storage.transfer()
+       >>> # File is transfered to remote location
+
+Useful if you want to do preprocessing
+
+Tasks
+-----
+
+-  ``queued_storage.backend.Transfer``:
+    The default task. Transfers to a remote location. The actual
+   transfer is implemented in the remote backend.
+
+-  ``queued_storage.backend.TransferAndDelete``:
+    Once the file was transferred, the local copy is deleted.
+
+To create new tasks, do something like this:
+
+::
+
+    from celery.registry import tasks
+    from queued_storage.backend import Transfer
+
+    class TransferAndDelete(Transfer):
+        def transfer(self, name, local, remote, **kwargs):
+            result = super(TransferAndDelete, self).transfer(name, local, remote, **kwargs)
+
+            if result:
+                local.delete(name)
+
+            return result
+
+    tasks.register(TransferAndDelete)
+
+The result is ``True`` if the transfer was successful, else ``False``
+and the task is retried.
+
+In case you don't want to use Celery, have a look
+`here <https://github.com/flashingpumpkin/django-queued-storage/blob/master/queued_storage/tests/__init__.py#L80>`_.
+
+To use a different task, pass it into the backend:
+
+::
+
+    image = models.ImageField(storage = S3Storage(task = TransferAndDelete))
+
+Settings
+--------
+
+-  ``QUEUED_STORAGE_CACHE_KEY``:
+    Use a different key for caching.
+
+-  ``QUEUED_STORAGE_RETRIES``:
+    How many retries should be attempted before aborting.
+
+-  ``QUEUED_STORAGE_RETRY_DELAY``:
+    The delay between retries.
+
+RELEASE NOTES
+=============
+
+v0.3 - *BACKWARDS INCOMPATIBLE*
+
+-  Added tests
+-  Added ``S3Storage`` and ``DelayedStorage``
+-  Added ``TransferAndDelete`` task
+-  Classes renamed to be consistent
 

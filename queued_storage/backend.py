@@ -4,8 +4,6 @@ from django.core.files.storage import get_storage_class
 from queued_storage.tasks import Transfer
 import urllib
 
-
-
 CACHE_PREFIX = getattr(settings, 'QUEUED_STORAGE_CACHE_KEY', 'queued_remote_storage_')
 
 class QueuedRemoteStorage(object):
@@ -117,17 +115,22 @@ class QueuedRemoteStorage(object):
     def modified_time(self, name):
         return self.get_storage(name).url(name)
 
-class FileSystemAndS3Backend(QueuedRemoteStorage):
+class DoubleFilesystemStorage(QueuedRemoteStorage):
+    def __init__(self, **kwargs):
+        super(DoubleFilesystemStorage, self).__init__(
+            'django.core.files.storage.FileSystemStorage',
+            'django.core.files.storage.FileSystemStorage',
+            **kwargs)
 
-    def __init__(self, cache_prefix=CACHE_PREFIX):
-        super(FileSystemAndS3Backend, self).__init__(
+class S3Storage(QueuedRemoteStorage):
+    def __init__(self, **kwargs):
+        super(S3Storage, self).__init__(
             local='django.core.files.storage.FileSystemStorage',
             remote='storages.backends.s3boto.S3BotoStorage',
-            cache_prefix=cache_prefix
+            **kwargs
         )
 
-class DelayedUploadStorage(QueuedRemoteStorage):
-
+class DelayedStorage(QueuedRemoteStorage):
     def save(self, name, content):
         cache.set(self.get_cache_key(name), False)
         name = self.local.save(name, content)
@@ -136,4 +139,3 @@ class DelayedUploadStorage(QueuedRemoteStorage):
     def upload(self, name):
         self.task.apply(args=(name, self.local_class, self.remote_class, self.get_cache_key(name)))
         return name
-

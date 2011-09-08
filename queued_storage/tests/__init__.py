@@ -13,19 +13,14 @@ from django.db import models
 from django.utils.unittest.case import TestCase
 from multiprocessing.process import Process
 from queued_storage import backend
-from queued_storage.backend import QueuedRemoteStorage
+from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage
 from queued_storage.tasks import TransferAndDelete
 import os
 import shutil
 import tempfile
 import time
 
-class DoubleFilesystemStorage(QueuedRemoteStorage):
-    def __init__(self, **kwargs):
-        super(DoubleFilesystemStorage, self).__init__(
-            'django.core.files.storage.FileSystemStorage',
-            'django.core.files.storage.FileSystemStorage',
-            **kwargs)
+
 
 class TestModel(models.Model):
     file = models.FileField(upload_to='test/')
@@ -54,6 +49,7 @@ class StorageTests(BasicTest):
             'django.core.files.storage.FileSystemStorage',
             'django.core.files.storage.FileSystemStorage',
             )
+        
         self.assertTrue(isinstance(storage, QueuedRemoteStorage))
         
         self.assertEqual(FileSystemStorage, storage.local.__class__)
@@ -83,6 +79,7 @@ class StorageTests(BasicTest):
         
         def task(name, local_class, remote_class, cache_key,
             local_args, local_kwargs, remote_args, remote_kwargs):
+            
             local = local_class(*local_args, **local_kwargs)
             remote = remote_class(*remote_args, **remote_kwargs)
 
@@ -92,18 +89,18 @@ class StorageTests(BasicTest):
             self.assertTrue(isinstance(remote, FileSystemStorage))
             
             remote.save(name, local.open(name))
+            
         def delay(*args, **kwargs):
             task(*args, **kwargs)
+            
         task.delay = delay
 
-        
-        storage = QueuedRemoteStorage(
-            'django.core.files.storage.FileSystemStorage',
-            'django.core.files.storage.FileSystemStorage',
+        storage = DoubleFilesystemStorage(
             local_kwargs={'location': self.local_dir},
             remote_kwargs={'location': self.remote_dir},
             task=task
         )
+        
         field = TestModel._meta.get_field('file')
         field.storage = storage
         
@@ -121,6 +118,7 @@ class StorageTests(BasicTest):
             local_kwargs={'location': self.local_dir},
             remote_kwargs={'location': self.remote_dir},
         )
+        
         field = TestModel._meta.get_field('file')
         field.storage = storage
         
@@ -143,6 +141,7 @@ class StorageTests(BasicTest):
             remote_kwargs={'location': self.remote_dir},
             task=TransferAndDelete
         )
+        
         field = TestModel._meta.get_field('file')
         field.storage = storage
         

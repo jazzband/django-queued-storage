@@ -5,8 +5,8 @@ from django.core.cache import cache
 from django.core.files.storage import get_storage_class
 
 
-MAX_RETRIES = getattr(settings, 'QUEUED_REMOTE_STORAGE_RETRIES', 5)
-RETRY_DELAY = getattr(settings, 'QUEUED_REMOTE_STORAGE_RETRY_DELAY', 60)
+MAX_RETRIES = getattr(settings, 'QUEUED_STORAGE_RETRIES', 5)
+RETRY_DELAY = getattr(settings, 'QUEUED_STORAGE_RETRY_DELAY', 60)
 
 class Transfer(Task):
     max_retries = MAX_RETRIES
@@ -29,6 +29,12 @@ class Transfer(Task):
         return result
     
     def transfer(self, name, local, remote, **kwargs):
+        """
+        `name` is the filename, `local` the local backend instance, `remote` 
+        the remote backend instance. 
+        
+        Returns `True` when the transfer succeeded, `False` if not.
+        """
         try:
             remote.save(name, local.open(name))
             return True
