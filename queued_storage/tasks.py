@@ -8,7 +8,7 @@ from django.core.files.storage import get_storage_class
 MAX_RETRIES = getattr(settings, 'QUEUED_REMOTE_STORAGE_RETRIES', 5)
 RETRY_DELAY = getattr(settings, 'QUEUED_REMOTE_STORAGE_RETRY_DELAY', 60)
 
-class TransferTask(Task):
+class Transfer(Task):
     max_retries = MAX_RETRIES
     default_retry_delay = RETRY_DELAY
     
@@ -39,4 +39,14 @@ class TransferTask(Task):
             logger.exception(e)
             return False
 
-tasks.register(TransferTask)
+class TransferAndDelete(Transfer):
+    def transfer(self, name, local, remote, **kwargs):
+        result = super(TransferAndDelete, self).transfer(name, local, remote, **kwargs)
+
+        if result:
+            local.delete(name)
+        
+        return result
+
+tasks.register(Transfer)
+tasks.register(TransferAndDelete)

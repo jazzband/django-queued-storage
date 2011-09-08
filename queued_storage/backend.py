@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.cache import cache
-from django.core.files.storage import get_storage_class, Storage
-from queued_storage.tasks import TransferTask
+from django.core.files.storage import get_storage_class
+from queued_storage.tasks import Transfer
 import urllib
 
 
@@ -27,7 +27,7 @@ class QueuedRemoteStorage(object):
         self._remote_instance = None
 
         # Allow users to override the remote transfer task
-        self.task = task or TransferTask
+        self.task = task or Transfer
 
     def _get_storage_obj(self, klass, args, kwargs):
         klass = get_storage_class(klass)

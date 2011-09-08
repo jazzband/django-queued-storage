@@ -14,6 +14,7 @@ from django.utils.unittest.case import TestCase
 from multiprocessing.process import Process
 from queued_storage import backend
 from queued_storage.backend import QueuedRemoteStorage
+from queued_storage.tasks import TransferAndDelete
 import os
 import shutil
 import tempfile
@@ -132,6 +133,28 @@ class StorageTests(BasicTest):
         self.assertTrue(
             os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
             "Remote file is not available.")
+
+    def test_transfer_and_delete(self):
+        """ Make sure the TransferAndDelete task does what it says """
+        storage = QueuedRemoteStorage(
+            'django.core.files.storage.FileSystemStorage',
+            'django.core.files.storage.FileSystemStorage',
+            local_kwargs={'location': self.local_dir},
+            remote_kwargs={'location': self.remote_dir},
+            task=TransferAndDelete
+        )
+        field = TestModel._meta.get_field('file')
+        field.storage = storage
         
+        obj = TestModel(file=File(open('%s/test.png' % os.path.dirname(__file__))))
+        obj.save()
+
+        obj.file.storage.result.get()
         
+        self.assertFalse(
+            os.path.isfile(os.path.join(self.local_dir, obj.file.name)),
+            "Local file is still available")
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
+            "Remote file is not available.")
 
