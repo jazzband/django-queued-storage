@@ -37,7 +37,7 @@ class Transfer(Task):
         the remote backend instance. 
         
         Returns `True` when the transfer succeeded, `False` if not. Retries 
-        th
+        the task when returning `False`.
         """
         try:
             remote.save(name, local.open(name))
