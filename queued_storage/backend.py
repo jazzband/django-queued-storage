@@ -1,16 +1,17 @@
 import urllib
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import get_storage_class, Storage
 
 from queued_storage.tasks import SaveToRemoteTask
 
-QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX = 'queued_remote_storage_'
+CACHE_PREFIX = getattr(settings, 'QUEUED_STORAGE_CACHE_KEY', 'queued_remote_storage_')
 
 class QueuedRemoteStorage(Storage):
 
     def __init__(self, local, remote,
-            cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX, task=None,
+            cache_prefix=CACHE_PREFIX, task=None,
             local_args=None, local_kwargs=None, remote_args=None,
             remote_kwargs=None):
         self.local_args = local_args or ()
@@ -109,7 +110,7 @@ class QueuedRemoteStorage(Storage):
 
 class FileSystemAndS3Backend(QueuedRemoteStorage):
 
-    def __init__(self, cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX):
+    def __init__(self, cache_prefix=CACHE_PREFIX):
         super(FileSystemAndS3Backend, self).__init__(
             local='django.core.files.storage.FileSystemStorage',
             remote='storages.backends.s3boto.S3BotoStorage',
