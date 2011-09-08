@@ -20,11 +20,14 @@ class Transfer(Task):
         
         result = self.transfer(name, local, remote, **kwargs)
         
-        if result:
+        if result is True:
             cache.set(cache_key, True)
-        else:
+        elif result is False:
             self.retry([name, local_class, remote_class, cache_key,
                 local_args, local_kwargs, remote_args, remote_kwargs], **kwargs)
+        else:
+            raise ValueError('Task `%s` did not return `True`/`False` but %s' % (
+                self.__class__, result))
     
         return result
     
@@ -33,7 +36,8 @@ class Transfer(Task):
         `name` is the filename, `local` the local backend instance, `remote` 
         the remote backend instance. 
         
-        Returns `True` when the transfer succeeded, `False` if not.
+        Returns `True` when the transfer succeeded, `False` if not. Retries 
+        th
         """
         try:
             remote.save(name, local.open(name))

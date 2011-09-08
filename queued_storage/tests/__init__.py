@@ -11,7 +11,7 @@ from django.core.files.storage import FileSystemStorage, Storage
 from django.db import models
 from django.utils.unittest.case import TestCase
 from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage
-from queued_storage.tasks import TransferAndDelete
+from queued_storage.tasks import TransferAndDelete, Transfer
 import os
 import shutil
 import tempfile
@@ -151,3 +151,30 @@ class StorageTests(BasicTest):
             os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
             "Remote file is not available.")
 
+    def test_transfer_returns_boolean(self):
+        """ 
+        Make sure an exception is thrown when the transfer task does not return
+        a boolean. We don't want to confuse Celery. 
+        """
+        
+        class NoneReturningTask(Transfer):
+            def transfer(self, *args, **kwargs):
+                return None
+        
+        storage = QueuedRemoteStorage(
+            'django.core.files.storage.FileSystemStorage',
+            'django.core.files.storage.FileSystemStorage',
+            local_kwargs={'location': self.local_dir},
+            remote_kwargs={'location': self.remote_dir},
+            task=NoneReturningTask
+        )
+        
+        field = TestModel._meta.get_field('file')
+        field.storage = storage
+        
+        obj = TestModel(file=File(open('%s/test.png' % os.path.dirname(__file__))))
+        obj.save()
+        
+        self.assertRaises(ValueError, obj.file.storage.result.get, propagate=True)
+        
+        
