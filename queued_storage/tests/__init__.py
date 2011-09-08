@@ -8,19 +8,13 @@ remote storage systems.
 from django.conf import settings
 from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
-from django.core.management import call_command
 from django.db import models
 from django.utils.unittest.case import TestCase
-from multiprocessing.process import Process
-from queued_storage import backend
 from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage
 from queued_storage.tasks import TransferAndDelete
 import os
 import shutil
 import tempfile
-import time
-
-
 
 class TestModel(models.Model):
     file = models.FileField(upload_to='test/')
