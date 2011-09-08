@@ -8,7 +8,7 @@ from queued_storage.tasks import SaveToRemoteTask
 QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX = 'queued_remote_storage_'
 
 class QueuedRemoteStorage(Storage):
-
+    
     def __init__(self, local, remote, cache_prefix=QUEUED_REMOTE_STORAGE_CACHE_KEY_PREFIX, task=None):
         self.local_class = local
         self.remote_class = remote
@@ -85,6 +85,15 @@ class QueuedRemoteStorage(Storage):
         return self.get_storage(name).size(name)
 
     def url(self, name):
+        return self.get_storage(name).url(name)
+    
+    def accessed_time(self, name):
+        return self.get_storage(name).url(name)
+    
+    def created_time(self, name):
+        return self.get_storage(name).url(name)
+    
+    def modified_time(self, name):
         return self.get_storage(name).url(name)
 
 class FileSystemAndS3Backend(QueuedRemoteStorage):
