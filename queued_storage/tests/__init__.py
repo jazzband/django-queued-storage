@@ -12,13 +12,15 @@ from django.db import models
 from django.utils.unittest.case import TestCase
 from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage, \
     S3Storage, DelayedStorage
+from queued_storage.fields import RemoteFileField
 from queued_storage.tasks import TransferAndDelete, Transfer
 import os
 import shutil
 import tempfile
 
 class TestModel(models.Model):
-    file = models.FileField(upload_to='test/')
+    file = models.FileField(upload_to='test/', null=True)
+    remote = RemoteFileField(upload_to='test/', null=True)
         
 
 class BasicTest(TestCase):
@@ -196,7 +198,7 @@ class StorageTests(BasicTest):
         obj = TestModel(file=File(open('%s/test.png' % os.path.dirname(__file__))))
         obj.save()
 
-        self.assertEqual(None, getattr(obj.file.storage, 'result', None))
+        self.assertIsNone(getattr(obj.file.storage, 'result', None))
         
         self.assertFalse(
             os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
@@ -208,4 +210,23 @@ class StorageTests(BasicTest):
         self.assertTrue(
             os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
             "Remote file is not available.")
+
+    def test_remote_file_field(self):
+        storage = DelayedStorage(
+            'django.core.files.storage.FileSystemStorage',
+            'django.core.files.storage.FileSystemStorage',
+            local_kwargs={'location': self.local_dir},
+            remote_kwargs={'location': self.remote_dir},
+        )
         
+        field = TestModel._meta.get_field('remote')
+        field.storage = storage
+        
+        obj = TestModel(remote=File(open('%s/test.png' % os.path.dirname(__file__))))
+        obj.save()
+
+        self.assertIsNone(getattr(obj.file.storage, 'result', None))
+        
+        result = obj.remote.transfer()
+        
+        self.assertTrue(os.path.isfile(os.path.join(self.remote_dir, obj.remote.name)))

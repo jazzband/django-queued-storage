@@ -60,16 +60,32 @@ for the remote backend:
   This backend does *not* transfer files to the remote location automatically.
 
 		image = ImageField(storage = DelayedStorage(
-			local = 'django.core.files.storage.FileSystemStorage',
-			remote = 'storages.backends.s3boto.S3BotoStorage'))
+			'django.core.files.storage.FileSystemStorage',
+			'storages.backends.s3boto.S3BotoStorage'))
 
 		>>> m = MyModel(image = File(open('image.png')))
-		>>> m.save()
-		>>> # File is saved locally
-		>>> m.file.storage.transfer(m.file.name)
-		>>> # File is transfered to remote location
+		>>> # Save locally:
+		>>> m.save() 
+		>>> # Transfer to remote location:
+		>>> m.file.storage.transfer(m.file.name) 
   
   Useful if you want to do preprocessing
+
+## Fields
+
+* `queued_storage.backend.RemoteFileField`:  
+  Tiny wrapper around any `QueuedRemoteStorage`, provides a convenient method
+  to transfer files. The above `DelayedStorage` example would look like this:
+
+    	image = RemoteFileField(storage = DelayedStorage(
+			'django.core.files.storage.FileSystemStorage',
+			'storages.backends.s3boto.S3BotoStorage'))
+		
+		>>> m = MyModel(image = File(open('image.png')))
+		>>> # Save locally:
+		>>> m.save() 
+		>>> # Transfer to remote location:
+		>>> m.file.transfer()
 
 ## Tasks
 
