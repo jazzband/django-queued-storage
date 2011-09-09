@@ -107,13 +107,13 @@ class QueuedRemoteStorage(object):
         return self.get_storage(name).url(name)
     
     def accessed_time(self, name):
-        return self.get_storage(name).url(name)
+        return self.get_storage(name).accessed_time(name)
     
     def created_time(self, name):
-        return self.get_storage(name).url(name)
+        return self.get_storage(name).created_time(name)
     
     def modified_time(self, name):
-        return self.get_storage(name).url(name)
+        return self.get_storage(name).modified_time(name)
 
 class DoubleFilesystemStorage(QueuedRemoteStorage):
     def __init__(self, **kwargs):
