@@ -10,7 +10,8 @@ from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
 from django.db import models
 from django.utils.unittest.case import TestCase
-from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage
+from queued_storage.backend import QueuedRemoteStorage, DoubleFilesystemStorage, \
+    S3Storage, DelayedStorage
 from queued_storage.tasks import TransferAndDelete, Transfer
 import os
 import shutil
@@ -177,4 +178,34 @@ class StorageTests(BasicTest):
         
         self.assertRaises(ValueError, obj.file.storage.result.get, propagate=True)
         
+    def test_s3_storage(self):
+        """ Make sure that initing the class works """
+        self.assertTrue(isinstance(S3Storage(), S3Storage))
+    
+    def test_delayed_storage(self):
+        storage = DelayedStorage(
+            'django.core.files.storage.FileSystemStorage',
+            'django.core.files.storage.FileSystemStorage',
+            local_kwargs={'location': self.local_dir},
+            remote_kwargs={'location': self.remote_dir},
+        )
+        
+        field = TestModel._meta.get_field('file')
+        field.storage = storage
+        
+        obj = TestModel(file=File(open('%s/test.png' % os.path.dirname(__file__))))
+        obj.save()
+
+        self.assertEqual(None, getattr(obj.file.storage, 'result', None))
+        
+        self.assertFalse(
+            os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
+            "Remote file should not be transferred automatically.")
+
+        result = obj.file.storage.transfer(obj.file.name)
+        result.get()
+        
+        self.assertTrue(
+            os.path.isfile(os.path.join(self.remote_dir, obj.file.name)),
+            "Remote file is not available.")
         

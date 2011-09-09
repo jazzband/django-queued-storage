@@ -139,6 +139,3 @@ class DelayedStorage(QueuedRemoteStorage):
         name = self.local.save(name, content)
         return name
 
-    def upload(self, name):
-        self.task.apply(args=(name, self.local_class, self.remote_class, self.get_cache_key(name)))
-        return name

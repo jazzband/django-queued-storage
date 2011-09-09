@@ -86,7 +86,7 @@ Backends
        >>> m = MyModel(image = File(open('image.png')))
        >>> m.save()
        >>> # File is saved locally
-       >>> m.file.storage.transfer()
+       >>> m.file.storage.transfer(m.file.name)
        >>> # File is transfered to remote location
 
 Useful if you want to do preprocessing
