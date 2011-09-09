@@ -125,8 +125,8 @@ class DoubleFilesystemStorage(QueuedRemoteStorage):
 class S3Storage(QueuedRemoteStorage):
     def __init__(self, **kwargs):
         super(S3Storage, self).__init__(
-            local='django.core.files.storage.FileSystemStorage',
-            remote='storages.backends.s3boto.S3BotoStorage',
+            'django.core.files.storage.FileSystemStorage',
+            'storages.backends.s3boto.S3BotoStorage',
             **kwargs
         )
 
