@@ -74,14 +74,17 @@ class QueuedRemoteStorage(object):
         cache.set(self.get_cache_key(name), False)
         name = self.local.save(name, content)
 
-        local_class = get_storage_class(self.local_class)
-        remote_class = get_storage_class(self.remote_class)
-
-        self.result = self.task.delay(name, local_class, remote_class, self.get_cache_key(name),
-            self.local_args, self.local_kwargs, self.remote_args, self.remote_kwargs)
+        self.result = self.transfer(name)
 
         return name
 
+    def transfer(self, name):
+        local_class = get_storage_class(self.local_class)
+        remote_class = get_storage_class(self.remote_class)
+        
+        return self.task.delay(name, local_class, remote_class, self.get_cache_key(name),
+            self.local_args, self.local_kwargs, self.remote_args, self.remote_kwargs)
+        
     def get_valid_name(self, name):
         return self.get_storage(name).get_valid_name(name)
 
