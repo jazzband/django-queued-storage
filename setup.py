@@ -12,6 +12,8 @@ setup(
     long_description=read(path.join(path.dirname(__file__), 'README.rst')),
     author='Sean Brant, Josh VanderLinden',
     author_email='codekoala@gmail.com',
+    maintainer='Jannis Leidel',
+    maintainer_email='jannis@leidel.info',
     packages=find_packages(),
     classifiers=[
         'Programming Language :: Python',
