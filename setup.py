@@ -1,10 +1,15 @@
+import codecs
+from os import path
 from setuptools import setup, find_packages
+
+read = lambda filepath: codecs.open(filepath, 'r', 'utf-8').read()
 
 setup(
     name='django-queued-storage',
-    description='Provides a proxy for django file storage, that allows you to upload files locally and eventually serve them remotely',
-    long_description = open('README.rst').read(),
     version=":versiontools:queued_storage:",
+    description='Provides a proxy for django file storage, that allows you '
+                'to upload files locally and eventually serve them remotely',
+    long_description=read(path.join(path.dirname(__file__), 'README.rst')),
     author='Sean Brant, Josh VanderLinden',
     author_email='codekoala@gmail.com',
     packages=find_packages(),
