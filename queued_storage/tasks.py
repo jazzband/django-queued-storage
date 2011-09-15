@@ -1,16 +1,15 @@
-from celery.registry import tasks
-from celery.task import Task
-from django.conf import settings
 from django.core.cache import cache
 from django.core.files.storage import get_storage_class
 
+from celery.registry import tasks
+from celery.task import Task
 
-MAX_RETRIES = getattr(settings, 'QUEUED_STORAGE_RETRIES', 5)
-RETRY_DELAY = getattr(settings, 'QUEUED_STORAGE_RETRY_DELAY', 60)
+from queued_storage.conf import settings
+
 
 class Transfer(Task):
-    max_retries = MAX_RETRIES
-    default_retry_delay = RETRY_DELAY
+    max_retries = settings.QUEUED_STORAGE_RETRIES
+    default_retry_delay = settings.QUEUED_STORAGE_RETRY_DELAY
     
     def run(self, name, local_class, remote_class, cache_key,
         local_args, local_kwargs, remote_args, remote_kwargs, **kwargs):

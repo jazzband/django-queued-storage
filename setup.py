@@ -21,11 +21,13 @@ setup(
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Framework :: Django',
+    install_requires=[
+        'django-celery >= 2.3.3, < 3.0',
+        'django-appconf >= 0.4',
     ],
     setup_requires = [
         'versiontools >= 1.8',
     ],
     include_package_data=True,
-    install_requires=['django-celery>=2.3.3'],
     zip_safe=False,
 )

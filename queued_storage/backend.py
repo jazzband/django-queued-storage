@@ -1,14 +1,15 @@
-from django.conf import settings
-from django.core.cache import cache
-from django.core.files.storage import get_storage_class
-from queued_storage.tasks import Transfer
 import urllib
 
-CACHE_PREFIX = getattr(settings, 'QUEUED_STORAGE_CACHE_KEY', 'queued_remote_storage_')
+from django.core.cache import cache
+from django.core.files.storage import get_storage_class
+
+from queued_storage.conf import settings
+from queued_storage.tasks import Transfer
+
 
 class QueuedRemoteStorage(object):
 
-    def __init__(self, local_class, remote_class, cache_prefix=CACHE_PREFIX, task=None,
+    def __init__(self, local_class, remote_class, cache_prefix=None, task=None,
             local_args=None, local_kwargs=None, remote_args=None, remote_kwargs=None):
         
         self.local_class = local_class
@@ -19,7 +20,7 @@ class QueuedRemoteStorage(object):
         self.remote_args = remote_args or ()
         self.remote_kwargs = remote_kwargs or {}
                 
-        self.cache_prefix = cache_prefix
+        self.cache_prefix = cache_prefix or settings.QUEUED_STORAGE_CACHE_KEY
         
         self._local_instance = None
         self._remote_instance = None
