@@ -25,7 +25,7 @@ Configuration
    `django-celery <https://github.com/ask/django-celery>`_
 -  Set up a `caching
    backend <https://docs.djangoproject.com/en/1.3/topics/cache/#setting-up-the-cache>`_
--  Add ``queued_storage`` to your ``INSTALLED_APPS`` tuple
+-  Add ``'queued_storage'`` to your ``INSTALLED_APPS`` tuple
 
 Usage
 -----
@@ -36,17 +36,17 @@ required.
 
 This example is using
 `django-storages <http://code.welldev.org/django-storages/>`_ for the
-remote backend:
-
-::
+remote backend::
 
     from django.db import models
     from queued_storage.storage import QueuedRemoteStorage
 
+    my_storage = QueuedRemoteStorage(
+        local='django.core.files.storage.FileSystemStorage',
+        remote='storages.backends.s3boto.S3BotoStorage')
+
     class MyModel(models.Model):
-        image = ImageField(storage = QueuedRemoteStorage(
-            local = 'django.core.files.storage.FileSystemStorage',
-            remote = 'storages.backends.s3boto.S3BotoStorage'))
+        image = ImageField(storage=my_storage)
 
 Backends
 --------
