@@ -1,42 +1,93 @@
 from django.core.cache import cache
-from django.core.files.storage import get_storage_class
 
-from celery.registry import tasks
 from celery.task import Task
 
 from queued_storage.conf import settings
 
 
 class Transfer(Task):
+    """
+    The default task. Transfers a file to a remote location.
+    The actual transfer is implemented in the remote backend.
+
+    To use a different task, pass it into the backend:
+
+    .. code-block:: python
+
+        from queued_storage.backends import QueuedS3BotoStorage
+
+        s3_delete_storage = QueuedS3BotoStorage(task=TransferAndDelete)
+
+        # later, in model definition:
+        image = models.ImageField(storage=s3_delete_storage)
+
+
+    The result should be ``True`` if the transfer was successful,
+    or ``False`` if unsuccessful. In the latter case the task will be
+    retried.
+
+    You can subclass the :class:`~queued_storage.tasks.Transfer` class
+    to customize the behaviour, to do something like this:
+
+    .. code-block:: python
+
+        from queued_storage.tasks import Transfer
+
+        class TransferAndNotify(Transfer):
+            def transfer(self, *args, **kwargs):
+                result = super(TransferAndNotify, self).transfer(*args, **kwargs)
+                if result:
+                    # call the (imaginary) notify function with the result
+                    notify(result)
+                return result
+
+    """
+    #: The number of retries if unsuccessful (default: see
+    #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_RETRIES`)
     max_retries = settings.QUEUED_STORAGE_RETRIES
+
+    #: The delay between each retry in seconds (default: see
+    #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_RETRY_DELAY`)
     default_retry_delay = settings.QUEUED_STORAGE_RETRY_DELAY
-    
-    def run(self, name, local_class, remote_class, cache_key,
-        local_args, local_kwargs, remote_args, remote_kwargs, **kwargs):
-        
-        local = local_class(*local_args, **local_kwargs)
-        remote = remote_class(*remote_args, **remote_kwargs)
-        
+
+    def run(self, name, local, remote, cache_key, **kwargs):
+        """
+        The main work horse of the transfer task. Calls the transfer
+        method with the local and remote storage backends as given
+        with the parameters.
+
+        :param name: name of the file to transfer
+        :type name: str
+        :param local: local storage class to transfer from
+        :type local: dotted import path or :class:`~django:django.core.files.storage.Storage` subclass
+        :param remote: remote storage class to transfer to
+        :type remote: dotted import path or :class:`~django:django.core.files.storage.Storage` subclass
+        :param cache_key: cache key to set after a successful transfer
+        :type cache_key: str
+        :rtype: task result
+        """
         result = self.transfer(name, local, remote, **kwargs)
-        
+
         if result is True:
             cache.set(cache_key, True)
         elif result is False:
-            self.retry([name, local_class, remote_class, cache_key,
-                local_args, local_kwargs, remote_args, remote_kwargs], **kwargs)
+            self.retry(name, local, remote, cache_key, **kwargs)
         else:
-            raise ValueError('Task `%s` did not return `True`/`False` but %s' % (
-                self.__class__, result))
-    
+            raise ValueError("Task '%s' did not return True/False but %s" %
+                             (self.__class__, result))
         return result
-    
+
     def transfer(self, name, local, remote, **kwargs):
         """
-        `name` is the filename, `local` the local backend instance, `remote` 
-        the remote backend instance. 
-        
-        Returns `True` when the transfer succeeded, `False` if not. Retries 
-        the task when returning `False`.
+        Transfers the file with the given name from the local to the remote
+        storage backend.
+
+        :param name: The name of the file to transfer
+        :param local: The local storage backend instance
+        :param remote: The remote storage backend instance
+        :returns: `True` when the transfer succeeded, `False` if not. Retries
+                  the task when returning `False`
+        :rtype: bool
         """
         try:
             remote.save(name, local.open(name))
@@ -48,14 +99,16 @@ class Transfer(Task):
             logger.exception(e)
             return False
 
-class TransferAndDelete(Transfer):
-    def transfer(self, name, local, remote, **kwargs):
-        result = super(TransferAndDelete, self).transfer(name, local, remote, **kwargs)
 
+class TransferAndDelete(Transfer):
+    """
+    A :class:`~queued_storage.tasks.Transfer` subclass which deletes the
+    file with the given name using the local storage if the transfer
+    was successful.
+    """
+    def transfer(self, name, local, remote, **kwargs):
+        result = super(TransferAndDelete, self).transfer(name, local,
+                                                         remote, **kwargs)
         if result:
             local.delete(name)
-        
         return result
-
-tasks.register(Transfer)
-tasks.register(TransferAndDelete)
