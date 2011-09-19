@@ -14,6 +14,7 @@ setup(
     author_email='codekoala@gmail.com',
     maintainer='Jannis Leidel',
     maintainer_email='jannis@leidel.info',
+    url='http://django-queued-storage.rtfd.org',
     packages=find_packages(),
     license='BSD',
     classifiers=[
