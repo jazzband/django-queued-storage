@@ -1,4 +1,6 @@
 build/
 dist/
-django_queued_storage.egg-info/
-*.pyc
+*.egg-info/
+.tox
+docs/_build
+.coverage
