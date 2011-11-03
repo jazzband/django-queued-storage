@@ -2,7 +2,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
 
 
-def import_attribute(import_path=None):
+def import_attribute(import_path=None, options=None):
     if import_path is None:
         raise ImproperlyConfigured("No import path was given.")
     try:

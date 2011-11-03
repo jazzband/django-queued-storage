@@ -3,6 +3,7 @@ from django.core.cache import cache
 from celery.task import Task
 
 from queued_storage.conf import settings
+from queued_storage.utils import import_attribute
 
 
 class Transfer(Task):
@@ -16,7 +17,8 @@ class Transfer(Task):
 
         from queued_storage.backends import QueuedS3BotoStorage
 
-        s3_delete_storage = QueuedS3BotoStorage(task=TransferAndDelete)
+        s3_delete_storage = QueuedS3BotoStorage(
+            task='queued_storage.tasks.TransferAndDelete')
 
         # later, in model definition:
         image = models.ImageField(storage=s3_delete_storage)
@@ -50,7 +52,9 @@ class Transfer(Task):
     #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_RETRY_DELAY`)
     default_retry_delay = settings.QUEUED_STORAGE_RETRY_DELAY
 
-    def run(self, name, local, remote, cache_key, **kwargs):
+    def run(self, name, cache_key,
+            local_path, remote_path,
+            local_options, remote_options, **kwargs):
         """
         The main work horse of the transfer task. Calls the transfer
         method with the local and remote storage backends as given
@@ -58,20 +62,27 @@ class Transfer(Task):
 
         :param name: name of the file to transfer
         :type name: str
-        :param local: local storage class to transfer from
-        :type local: dotted import path or :class:`~django:django.core.files.storage.Storage` subclass
-        :param remote: remote storage class to transfer to
-        :type remote: dotted import path or :class:`~django:django.core.files.storage.Storage` subclass
+        :param local_path: local storage class to transfer from
+        :type local_path: dotted import path
+        :param local_options: options of the local storage class
+        :type local_options: dict
+        :param remote_path: remote storage class to transfer to
+        :type remote_path: dotted import path
+        :param remote_options: options of the remote storage class
+        :type remote_options: dict
         :param cache_key: cache key to set after a successful transfer
         :type cache_key: str
         :rtype: task result
         """
+        local = import_attribute(local_path)(**local_options)
+        remote = import_attribute(remote_path)(**remote_options)
         result = self.transfer(name, local, remote, **kwargs)
 
         if result is True:
             cache.set(cache_key, True)
         elif result is False:
-            self.retry(name, local, remote, cache_key, **kwargs)
+            self.retry(name, cache_key, local_path, remote_path,
+                       local_options, remote_options, **kwargs)
         else:
             raise ValueError("Task '%s' did not return True/False but %s" %
                              (self.__class__, result))
@@ -94,8 +105,8 @@ class Transfer(Task):
             return True
         except Exception, e:
             logger = self.get_logger(**kwargs)
-            logger.exception("Unable to save '%s' to remote storage. About "
-                "to retry." % name)
+            logger.exception("Unable to save '%s' to remote storage. "
+                             "About to retry." % name)
             logger.exception(e)
             return False
 

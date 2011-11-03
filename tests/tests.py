@@ -15,9 +15,8 @@ from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
 from django.test import TestCase
 
-from queued_storage.backends import QueuedStorage, QueuedS3BotoStorage
+from queued_storage.backends import QueuedStorage
 from queued_storage.conf import settings
-from queued_storage.tasks import TransferAndDelete, Transfer
 
 from .models import TestModel
 
@@ -48,7 +47,7 @@ class StorageTests(TestCase):
         storage = QueuedStorage(
             'django.core.files.storage.FileSystemStorage',
             'django.core.files.storage.FileSystemStorage')
-        self.assertTrue(isinstance(storage, QueuedStorage))
+        self.assertIsInstance(storage, QueuedStorage)
         self.assertEqual(FileSystemStorage, storage.local.__class__)
         self.assertEqual(FileSystemStorage, storage.remote.__class__)
 
@@ -83,20 +82,12 @@ class StorageTests(TestCase):
         """
         Make sure that saving to remote locations actually works
         """
-        def task(name, local, remote, cache_key):
-            remote.save(name, local.open(name))
-            self.assertTrue(isinstance(local, FileSystemStorage))
-            self.assertTrue(isinstance(remote, FileSystemStorage))
-            remote.save(name, local.open(name))
-
-        def delay(*args, **kwargs):
-            task(*args, **kwargs)
-
-        task.delay = delay
-
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir), task=task)
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            task='tests.tasks.test_task')
 
         field = TestModel._meta.get_field('file')
         field.storage = storage
@@ -112,8 +103,10 @@ class StorageTests(TestCase):
         Make sure it actually works when using Celery as a task queue
         """
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir))
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir))
 
         field = TestModel._meta.get_field('file')
         field.storage = storage
@@ -161,9 +154,11 @@ class StorageTests(TestCase):
         Make sure the TransferAndDelete task does what it says
         """
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir),
-            task=TransferAndDelete)
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            task='queued_storage.tasks.TransferAndDelete')
 
         field = TestModel._meta.get_field('file')
         field.storage = storage
@@ -185,15 +180,12 @@ class StorageTests(TestCase):
         Make sure an exception is thrown when the transfer task does not return
         a boolean. We don't want to confuse Celery.
         """
-
-        class NoneReturningTask(Transfer):
-            def transfer(self, *args, **kwargs):
-                return None
-
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir),
-            task=NoneReturningTask)
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            task='tests.tasks.NoneReturningTask')
 
         field = TestModel._meta.get_field('file')
         field.storage = storage
@@ -204,16 +196,13 @@ class StorageTests(TestCase):
         self.assertRaises(ValueError,
                           obj.file.storage.result.get, propagate=True)
 
-    def test_s3_storage(self):
-        """
-        Make sure that initing the class works
-        """
-        self.assertTrue(isinstance(QueuedS3BotoStorage(), QueuedS3BotoStorage))
-
     def test_delayed_storage(self):
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir), delayed=True)
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            delayed=True)
 
         field = TestModel._meta.get_field('file')
         field.storage = storage
@@ -236,8 +225,11 @@ class StorageTests(TestCase):
 
     def test_remote_file_field(self):
         storage = QueuedStorage(
-            local=FileSystemStorage(location=self.local_dir),
-            remote=FileSystemStorage(location=self.remote_dir), delayed=True)
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            delayed=True)
 
         field = TestModel._meta.get_field('remote')
         field.storage = storage
