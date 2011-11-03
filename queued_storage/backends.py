@@ -10,9 +10,9 @@ from queued_storage.utils import import_attribute
 
 class LazyBackend(SimpleLazyObject):
 
-    def __init__(self, import_path):
-        cls = import_attribute(import_path)
-        super(LazyBackend, self).__init__(lambda: cls())
+    def __init__(self, import_path, options):
+        backend = import_attribute(import_path)
+        super(LazyBackend, self).__init__(lambda: backend(**options))
 
 
 class QueuedStorage(object):
@@ -21,30 +21,37 @@ class QueuedStorage(object):
     backends.
 
     :param local: local storage class to transfer from
-    :type local: dotted import path or :class:`~django:django.core.files.storage.Storage` instance
+    :type local: dotted import path
+    :param local_options: options of the local storage class
+    :type local_options: dict
     :param remote: remote storage class to transfer to
-    :type remote: dotted import path or :class:`~django:django.core.files.storage.Storage` instance
+    :type remote: dotted import path
+    :param remote_options: options of the remote storage class
+    :type remote_options: dict
     :param cache_prefix: prefix to use in the cache key
     :type cache_prefix: str
     :param delayed: whether the transfer task should be executed automatically
     :type delayed: bool
     :param task: Celery task to use for the transfer
-    :type task: dotted import path or :class:`~celery:celery.task.Task` subclass
+    :type task: dotted import path
     """
-    #: The local storage class to use. Either a dotted path (e.g.
-    #: ``'django.core.files.storage.FileSystemStorage'``) or a
-    #: :class:`~django:django.core.files.storage.Storage` subclass.
+    #: The local storage class to use. A dotted path (e.g.
+    #: ``'django.core.files.storage.FileSystemStorage'``).
     local = None
 
-    #: The local storage class to use. Either a dotted path (e.g.
-    #: ``'django.core.files.storage.FileSystemStorage'``) or a
-    #: :class:`~django:django.core.files.storage.Storage` subclass.
+    #: The options of the local storage class, defined as a dictionary.
+    local_options = None
+
+    #: The local storage class to use. A dotted path (e.g.
+    #: ``'django.core.files.storage.FileSystemStorage'``).
     remote = None
 
+    #: The options of the remote storage class, defined as a dictionary.
+    remote_options = None
+
     #: The Celery task class to use to transfer files from the local
-    #: to the remote storage. Either a dotted path (e.g.
-    #: ``'queued_storage.tasks.Transfer'``) or a
-    #: :class:`~celery:celery.task.Task` subclass.
+    #: to the remote storage. A dotted path (e.g.
+    #: ``'queued_storage.tasks.Transfer'``).
     task = 'queued_storage.tasks.Transfer'
 
     #: If set to ``True`` the backend will *not* transfer files to the remote
@@ -59,25 +66,38 @@ class QueuedStorage(object):
     #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_CACHE_PREFIX`)
     cache_prefix = settings.QUEUED_STORAGE_CACHE_PREFIX
 
-    def __init__(self, local=None, remote=None, cache_prefix=None,
-                 delayed=None, task=None):
-        self.local = self._load_backend('local', local)
-        self.remote = self._load_backend('remote', remote)
-        self.task = self._load_backend('task', task, import_attribute)
+    def __init__(self, local=None, remote=None,
+                 local_options=None, remote_options=None,
+                 cache_prefix=None, delayed=None, task=None):
+
+        self.local_path = local or self.local
+        self.local_options = local_options or self.local_options or {}
+        self.local = self._load_backend(backend=self.local_path,
+                                        options=self.local_options)
+
+        self.remote_path = remote or self.remote
+        self.remote_options = remote_options or self.remote_options or {}
+        self.remote = self._load_backend(backend=self.remote_path,
+                                         options=self.remote_options)
+
+        self.task = self._load_backend(backend=task or self.task,
+                                       handler=import_attribute)
         if delayed is not None:
             self.delayed = delayed
         if cache_prefix is not None:
             self.cache_prefix = cache_prefix
 
-    def _load_backend(self, name, backend=None, handler=LazyBackend):
-        if backend is None:
-            backend = getattr(self, name, None)
-        if isinstance(backend, basestring):
-            backend = handler(backend)
-        elif backend is None:
-            raise ImproperlyConfigured("The QueuedStorage class '%s' doesn't "
-                                       "specify a %s backend." % (self, name))
-        return backend
+    def _load_backend(self, backend=None, options=None, handler=LazyBackend):
+        if backend is None:  # pragma: no cover
+            raise ImproperlyConfigured("The QueuedStorage class '%s' "
+                                       "doesn't define a needed backend." %
+                                       (self, backend))
+        if not isinstance(backend, basestring):
+            raise ImproperlyConfigured("The QueuedStorage class '%s' "
+                                       "requires its backends to be "
+                                       "specified as dotted import paths "
+                                       "not instances or classes" % self)
+        return handler(backend, options)
 
     def get_storage(self, name):
         """
@@ -179,7 +199,9 @@ class QueuedStorage(object):
         """
         if cache_key is None:
             cache_key = self.get_cache_key(name)
-        return self.task.delay(name, self.local, self.remote, cache_key)
+        return self.task.delay(name, cache_key,
+                               self.local_path, self.remote_path,
+                               self.local_options, self.remote_options)
 
     def get_valid_name(self, name):
         """
