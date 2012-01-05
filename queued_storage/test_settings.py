@@ -10,7 +10,8 @@ DATABASES = {
 INSTALLED_APPS = [
     'djcelery',
     'queued_storage',
-    'tests',
+    'queued_storage.tests',
+    'django_jenkins',
 ]
 
 import djcelery
