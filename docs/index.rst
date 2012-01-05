@@ -10,7 +10,7 @@ might otherwise be required.
 This example is using django-storages_ for the remote backend::
 
     from django.db import models
-    from queued_storage.storage import QueuedStorage
+    from queued_storage.backends import QueuedStorage
     from storages.backends.s3boto import S3BotoStorage
 
     queued_s3storage = QueuedStorage(
