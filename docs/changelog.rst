@@ -1,6 +1,15 @@
 Changelog
 =========
 
+v0.5 (2012-03-19)
+-----------------
+
+- Fixed retrying in case of errors.
+
+- Dropped Python 2.5 support as Celery has dropped it, too.
+
+- Use django-jenkins on own CI server: https://ci.enn.io/job/django-queued-storage/
+
 v0.4 (2011-11-03)
 -----------------
 
@@ -20,7 +29,7 @@ v0.4 (2011-11-03)
 
       my_storage = QueuedStorage(
           FileSystemStorage(location='/path/to/files'),
-      	  MyCustomStorageBackend(spam='eggs'))
+          MyCustomStorageBackend(spam='eggs'))
 
   New::
 
@@ -32,8 +41,8 @@ v0.4 (2011-11-03)
 
   .. warning::
 
-  	This change is backwards-incompatible if you used the
-  	:class:`~queued_storage.backends.QueuedStorage` API.
+     This change is backwards-incompatible if you used the
+     :class:`~queued_storage.backends.QueuedStorage` API.
 
 v0.3 (2011-09-19)
 -----------------
