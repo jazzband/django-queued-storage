@@ -106,8 +106,8 @@ class Transfer(Task):
             return True
         except Exception, e:
             logger = self.get_logger(**kwargs)
-            logger.exception("Unable to save '%s' to remote storage. "
-                             "About to retry." % name)
+            logger.error("Unable to save '%s' to remote storage. "
+                         "About to retry." % name)
             logger.exception(e)
             return False
 
