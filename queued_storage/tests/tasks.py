@@ -19,3 +19,15 @@ test_task.delay = delay
 class NoneReturningTask(Transfer):
     def transfer(self, *args, **kwargs):
         return None
+
+
+retried = False
+
+class RetryingTask(Transfer):
+    def transfer(self, *args, **kwargs):
+        global retried
+        if retried:
+            return True
+        else:
+            retried = True
+            return False

@@ -19,6 +19,7 @@ from queued_storage.backends import QueuedStorage
 from queued_storage.conf import settings
 
 from .models import TestModel
+from . import tasks as test_tasks
 
 
 class StorageTests(TestCase):
@@ -195,6 +196,27 @@ class StorageTests(TestCase):
 
         self.assertRaises(ValueError,
                           obj.file.storage.result.get, propagate=True)
+
+    def test_transfer_retried(self):
+        """
+        Make sure the transfer task is retried correctly.
+        """
+        storage = QueuedStorage(
+            local='django.core.files.storage.FileSystemStorage',
+            remote='django.core.files.storage.FileSystemStorage',
+            local_options=dict(location=self.local_dir),
+            remote_options=dict(location=self.remote_dir),
+            task='queued_storage.tests.tasks.RetryingTask')
+        field = TestModel._meta.get_field('file')
+        field.storage = storage
+
+        self.assertFalse(test_tasks.retried)
+
+        obj = TestModel(file=File(self.test_file))
+        obj.save()
+
+        self.assertFalse(obj.file.storage.result.get())
+        self.assertTrue(test_tasks.retried)
 
     def test_delayed_storage(self):
         storage = QueuedStorage(
