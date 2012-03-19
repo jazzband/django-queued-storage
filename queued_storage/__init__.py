@@ -1,2 +1,3 @@
-# following PEP 386, versiontools will pick it up
-__version__ = (0, 4, 0, "final", 0)
+# Version string following PEP 386
+# http://www.python.org/dev/peps/pep-0386/
+__version__ = "0.5"

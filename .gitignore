@@ -3,4 +3,4 @@ dist/
 *.egg-info/
 .tox
 docs/_build
-.coverage
+reports/

@@ -81,8 +81,9 @@ class Transfer(Task):
         if result is True:
             cache.set(cache_key, True)
         elif result is False:
-            self.retry(name, cache_key, local_path, remote_path,
-                       local_options, remote_options, **kwargs)
+            args = [name, cache_key, local_path,
+                    remote_path, local_options, remote_options]
+            self.retry(args=args, kwargs=kwargs)
         else:
             raise ValueError("Task '%s' did not return True/False but %s" %
                              (self.__class__, result))
@@ -105,8 +106,8 @@ class Transfer(Task):
             return True
         except Exception, e:
             logger = self.get_logger(**kwargs)
-            logger.exception("Unable to save '%s' to remote storage. "
-                             "About to retry." % name)
+            logger.error("Unable to save '%s' to remote storage. "
+                         "About to retry." % name)
             logger.exception(e)
             return False
 
