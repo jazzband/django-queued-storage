@@ -5,6 +5,8 @@ from celery.task import Task
 from queued_storage.conf import settings
 from queued_storage.utils import import_attribute
 
+from queued_storage.signals import queued_storage_file_transferred
+
 
 class Transfer(Task):
     """
@@ -80,6 +82,7 @@ class Transfer(Task):
 
         if result is True:
             cache.set(cache_key, True)
+            queued_storage_file_transferred.send(sender=self, path=name)
         elif result is False:
             args = [name, cache_key, local_path,
                     remote_path, local_options, remote_options]
