@@ -7,8 +7,8 @@ before_install:
   - export PIP_USE_MIRRORS=true
   - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
 install:
-  - pip install .
   - pip install -r requirements/tests.txt Django==$DJANGO
+  - pip install .
 before_script:
   - flake8 queued_storage --ignore=E501
 script:
