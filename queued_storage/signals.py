@@ -1,11 +1,11 @@
 """
 django-queued-storage ships with a signal fired after a file was transfered
 by the Transfer task. It provides the name of the file, the local and the
-remote storage backend instance as arguments to connected signal callbacks.
+remote storage backend instances as arguments to connected signal callbacks.
 
 Imagine you'd want to post-process the file that has been transfered from
-the local to the remote storage, e.g. add it to a log model so you always
-know what happened when. All you'd have to do is to connect a callback to
+the local to the remote storage, e.g. add it to a log model to always know
+what exactly happened. All you'd have to do is to connect a callback to
 the ``file_transferred`` signal::
 
     from django.dispatch import receiver
@@ -17,7 +17,7 @@ the ``file_transferred`` signal::
 
 
     @receiver(file_transferred)
-    def log_file_transferred(name, local, remote, **kwargs):
+    def log_file_transferred(sender, name, local, remote, **kwargs):
         remote_url = remote.url(name)
         TransferLogEntry.objects.create(name=name, remote_url=remote_url, transfer_date=now())
 
