@@ -19,7 +19,7 @@ from queued_storage.backends import QueuedStorage
 from queued_storage.conf import settings
 
 from .models import TestModel
-from . import tasks as test_tasks
+from ..tests import tasks as test_tasks
 
 
 class StorageTests(TestCase):
