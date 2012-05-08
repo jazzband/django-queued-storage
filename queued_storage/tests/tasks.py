@@ -1,6 +1,8 @@
 from queued_storage.tasks import Transfer
 from queued_storage.utils import import_attribute
 
+from . import models
+
 
 def test_task(name, cache_key,
               local_path, remote_path,
@@ -21,14 +23,9 @@ class NoneReturningTask(Transfer):
         return None
 
 
-retried = False
-
-
 class RetryingTask(Transfer):
     def transfer(self, *args, **kwargs):
-        global retried
-        if retried:
+        if models.retried:
             return True
-        else:
-            retried = True
-            return False
+        models.retried = True
+        return False

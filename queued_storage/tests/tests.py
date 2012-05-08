@@ -18,8 +18,7 @@ from django.test import TestCase
 from queued_storage.backends import QueuedStorage
 from queued_storage.conf import settings
 
-from .models import TestModel
-from queued_storage.tests import tasks as test_tasks
+from . import models
 
 
 class StorageTests(TestCase):
@@ -40,6 +39,7 @@ class StorageTests(TestCase):
 
     def tearDown(self):
         settings.CELERY_ALWAYS_EAGER = self.old_celery_always_eager
+        models.retried = False
 
     def test_storage_init(self):
         """
@@ -90,10 +90,10 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.test_task')
 
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertTrue(path.isfile(path.join(self.local_dir, obj.file.name)))
@@ -109,10 +109,10 @@ class StorageTests(TestCase):
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir))
 
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertTrue(obj.file.storage.result.get())
@@ -161,10 +161,10 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tasks.TransferAndDelete')
 
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         obj.file.storage.result.get()
@@ -188,10 +188,10 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.NoneReturningTask')
 
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertRaises(ValueError,
@@ -207,16 +207,16 @@ class StorageTests(TestCase):
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.RetryingTask')
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        self.assertFalse(test_tasks.retried)
+        self.assertFalse(models.retried)
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertFalse(obj.file.storage.result.get())
-        self.assertTrue(test_tasks.retried)
+        self.assertTrue(models.retried)
 
     def test_delayed_storage(self):
         storage = QueuedStorage(
@@ -226,10 +226,10 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             delayed=True)
 
-        field = TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        obj = TestModel(file=File(self.test_file))
+        obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertIsNone(getattr(obj.file.storage, 'result', None))
@@ -253,10 +253,10 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             delayed=True)
 
-        field = TestModel._meta.get_field('remote')
+        field = models.TestModel._meta.get_field('remote')
         field.storage = storage
 
-        obj = TestModel(remote=File(self.test_file))
+        obj = models.TestModel(remote=File(self.test_file))
         obj.save()
 
         self.assertIsNone(getattr(obj.file.storage, 'result', None))
