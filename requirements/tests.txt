@@ -1,0 +1,6 @@
+flake8
+django-nose
+coverage
+django-storages
+django-celery
+boto
