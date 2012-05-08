@@ -23,6 +23,7 @@ class NoneReturningTask(Transfer):
 
 retried = False
 
+
 class RetryingTask(Transfer):
     def transfer(self, *args, **kwargs):
         global retried
