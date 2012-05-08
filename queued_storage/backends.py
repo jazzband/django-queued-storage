@@ -21,11 +21,11 @@ class QueuedStorage(object):
     backends.
 
     :param local: local storage class to transfer from
-    :type local: dotted import path
+    :type local: str
     :param local_options: options of the local storage class
     :type local_options: dict
     :param remote: remote storage class to transfer to
-    :type remote: dotted import path
+    :type remote: str
     :param remote_options: options of the remote storage class
     :type remote_options: dict
     :param cache_prefix: prefix to use in the cache key
@@ -33,7 +33,7 @@ class QueuedStorage(object):
     :param delayed: whether the transfer task should be executed automatically
     :type delayed: bool
     :param task: Celery task to use for the transfer
-    :type task: dotted import path
+    :type task: str
     """
     #: The local storage class to use. A dotted path (e.g.
     #: ``'django.core.files.storage.FileSystemStorage'``).

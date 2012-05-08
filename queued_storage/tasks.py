@@ -64,11 +64,11 @@ class Transfer(Task):
         :param name: name of the file to transfer
         :type name: str
         :param local_path: local storage class to transfer from
-        :type local_path: dotted import path
+        :type local_path: str
         :param local_options: options of the local storage class
         :type local_options: dict
         :param remote_path: remote storage class to transfer to
-        :type remote_path: dotted import path
+        :type remote_path: str
         :param remote_options: options of the remote storage class
         :type remote_options: dict
         :param cache_key: cache key to set after a successful transfer
