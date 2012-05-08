@@ -3,12 +3,13 @@ python:
 #  - "2.5"
   - "2.6"
   - "2.7"
+before_install:
+  - export PIP_USE_MIRRORS=true
+  - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
 install:
   - pip install .
   - pip install -r requirements/tests.txt Django==$DJANGO
 before_script:
-  - export PIP_USE_MIRRORS=true
-  - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
   - flake8 queued_storage --ignore=E501
 script:
   - django-admin.py test queued_storage
