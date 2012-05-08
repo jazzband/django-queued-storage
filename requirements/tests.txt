@@ -4,3 +4,4 @@ coverage
 django-storages
 django-celery
 boto
+django-appconf
