@@ -56,6 +56,7 @@ For further details see the reference documentation:
    backends
    fields
    tasks
+   signals
    changelog
 
 Issues
