@@ -1,5 +1,5 @@
 flake8
-django-nose
+django-discover-runner
 coverage
 django-storages
 django-celery

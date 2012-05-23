@@ -6,13 +6,15 @@ python:
 before_install:
   - export PIP_USE_MIRRORS=true
   - export PIP_INDEX_URL=https://simple.crate.io/
+  - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
 install:
   - pip install -e .
   - pip install -r requirements/tests.txt Django==$DJANGO
 before_script:
   - flake8 queued_storage --ignore=E501
 script:
-  - django-admin.py test --settings=queued_storage.test_settings queued_storage
+  - coverage run --branch --source=queued_storage `which django-admin.py` test queued_storage
+  - coverage report
 env:
   - DJANGO=1.3.1
   - DJANGO=1.4

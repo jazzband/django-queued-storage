@@ -11,7 +11,6 @@ INSTALLED_APPS = [
     'djcelery',
     'queued_storage',
     'queued_storage.tests',
-    'django_nose',
 ]
 
 import djcelery
@@ -22,4 +21,4 @@ CELERY_IGNORE_RESULT = True
 CELERYD_LOG_LEVEL = "DEBUG"
 CELERY_DEFAULT_QUEUE = "queued_storage"
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = 'discover_runner.DiscoverRunner'
