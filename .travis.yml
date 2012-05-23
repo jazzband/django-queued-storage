@@ -14,7 +14,7 @@ before_script:
   - flake8 queued_storage --ignore=E501
 script:
   - coverage run --branch --source=queued_storage `which django-admin.py` test queued_storage
-  - coverage report
+  - coverage report --omit=queued_storage/test*
 env:
   - DJANGO=1.3.1
   - DJANGO=1.4
