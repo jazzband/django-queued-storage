@@ -1,8 +1,11 @@
 Changelog
 =========
 
-v0.5.1 (2012-05-24)
--------------------
+v0.6 (2012-05-24)
+-----------------
+
+- Added `file_transferred` signal that is called right after a file has been
+  transfered from the local to the remote storage.
 
 - Switched to using `django-discover-runner`_ and Travis for testing:
   http://travis-ci.org/jezdez/django-queued-storage
