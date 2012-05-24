@@ -3,6 +3,7 @@ from django.core.cache import cache
 from celery.task import Task
 
 from queued_storage.conf import settings
+from queued_storage.signals import file_transferred
 from queued_storage.utils import import_attribute
 
 
@@ -63,11 +64,11 @@ class Transfer(Task):
         :param name: name of the file to transfer
         :type name: str
         :param local_path: local storage class to transfer from
-        :type local_path: dotted import path
+        :type local_path: str
         :param local_options: options of the local storage class
         :type local_options: dict
         :param remote_path: remote storage class to transfer to
-        :type remote_path: dotted import path
+        :type remote_path: str
         :param remote_options: options of the remote storage class
         :type remote_options: dict
         :param cache_key: cache key to set after a successful transfer
@@ -80,6 +81,8 @@ class Transfer(Task):
 
         if result is True:
             cache.set(cache_key, True)
+            file_transferred.send(sender=self.__class__,
+                                  name=name, local=local, remote=remote)
         elif result is False:
             args = [name, cache_key, local_path,
                     remote_path, local_options, remote_options]
