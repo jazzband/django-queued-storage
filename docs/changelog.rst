@@ -1,6 +1,14 @@
 Changelog
 =========
 
+v0.5.1 (2012-05-24)
+-------------------
+
+- Switched to using `django-discover-runner`_ and Travis for testing:
+  http://travis-ci.org/jezdez/django-queued-storage
+
+.. `django-discover-runner`: http://pypi.python.org/pypi/django-discover-runner
+
 v0.5 (2012-03-19)
 -----------------
 
@@ -8,7 +16,7 @@ v0.5 (2012-03-19)
 
 - Dropped Python 2.5 support as Celery has dropped it, too.
 
-- Use django-jenkins on own CI server: https://ci.enn.io/job/django-queued-storage/
+- Use django-jenkins.
 
 v0.4 (2011-11-03)
 -----------------
