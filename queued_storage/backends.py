@@ -1,8 +1,7 @@
-import urllib
-
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
+from django.utils.http import urlquote
 
 from queued_storage.conf import settings
 from queued_storage.utils import import_attribute
@@ -126,7 +125,7 @@ class QueuedStorage(object):
         :type name: str
         :rtype: str
         """
-        return '%s_%s' % (self.cache_prefix, urllib.quote(name))
+        return '%s_%s' % (self.cache_prefix, urlquote(name))
 
     def using_local(self, name):
         """
