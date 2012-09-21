@@ -124,17 +124,17 @@ class StorageTests(TestCase):
         self.assertTrue(storage.using_remote(obj.file.name))
 
         self.assertEqual(self.test_file_name,
-            storage.get_valid_name(self.test_file_name))
+                         storage.get_valid_name(self.test_file_name))
         self.assertEqual(self.test_file_name,
-            storage.get_available_name(self.test_file_name))
+                         storage.get_available_name(self.test_file_name))
 
         subdir_path = os.path.join('test', self.test_file_name)
         self.assertTrue(storage.exists(subdir_path))
         self.assertEqual(storage.path(self.test_file_name),
-            path.join(self.local_dir, self.test_file_name))
+                         path.join(self.local_dir, self.test_file_name))
         self.assertEqual(storage.listdir('test')[1], [self.test_file_name])
         self.assertEqual(storage.size(subdir_path),
-            os.stat(self.test_file_path).st_size)
+                         os.stat(self.test_file_path).st_size)
         self.assertEqual(storage.url(self.test_file_name), self.test_file_name)
         self.assertIsInstance(storage.accessed_time(subdir_path), datetime)
         self.assertIsInstance(storage.created_time(subdir_path), datetime)
