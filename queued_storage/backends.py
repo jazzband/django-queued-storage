@@ -1,3 +1,5 @@
+import six
+
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
@@ -91,7 +93,7 @@ class QueuedStorage(object):
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
                                        "doesn't define a needed backend." %
                                        (self, backend))
-        if not isinstance(backend, basestring):
+        if not isinstance(backend, six.string_types):
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
                                        "requires its backends to be "
                                        "specified as dotted import paths "

@@ -32,7 +32,7 @@ class StorageTests(TestCase):
         tmp_dir = tempfile.mkdtemp()
         self.test_file_name = 'queued_storage.txt'
         self.test_file_path = path.join(tmp_dir, self.test_file_name)
-        self.test_file = file(self.test_file_path, 'a')
+        self.test_file = open(self.test_file_path, 'a')
         self.addCleanup(shutil.rmtree, self.local_dir)
         self.addCleanup(shutil.rmtree, self.remote_dir)
         self.addCleanup(shutil.rmtree, tmp_dir)
