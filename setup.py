@@ -44,7 +44,7 @@ setup(
         'Topic :: Utilities',
     ],
     install_requires=[
-        'django-celery >= 2.3.3, < 3.0',
+        'django-celery >= 2.3.3',
         'django-appconf >= 0.4',
     ],
     zip_safe=False,

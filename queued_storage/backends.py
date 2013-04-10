@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject

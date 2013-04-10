@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*- 
 from django.core.cache import cache
 
 from celery.task import Task
+from celery.utils.log import get_task_logger
 
 from queued_storage.conf import settings
 from queued_storage.signals import file_transferred
 from queued_storage.utils import import_attribute
+
+
+logger = get_task_logger(__name__)
 
 
 class Transfer(Task):
@@ -108,7 +113,6 @@ class Transfer(Task):
             remote.save(name, local.open(name))
             return True
         except Exception, e:
-            logger = self.get_logger(**kwargs)
             logger.error("Unable to save '%s' to remote storage. "
                          "About to retry." % name)
             logger.exception(e)

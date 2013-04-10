@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*- 
 from django.db.models.fields.files import FileField, FieldFile
 
 
