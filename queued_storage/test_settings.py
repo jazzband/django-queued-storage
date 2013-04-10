@@ -22,3 +22,5 @@ CELERYD_LOG_LEVEL = "DEBUG"
 CELERY_DEFAULT_QUEUE = "queued_storage"
 
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
+
+SECRET_KEY = 'top_secret'
