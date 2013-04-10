@@ -114,7 +114,7 @@ class Transfer(Task):
         try:
             remote.save(name, local.open(name))
             return True
-        except Exception, e:
+        except Exception as e:
             logger.error("Unable to save '%s' to remote storage. "
                          "About to retry." % name)
             logger.exception(e)
