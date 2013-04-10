@@ -3,3 +3,4 @@ django-discover-runner
 coverage
 django-celery
 django-appconf
+SQLAlchemy
