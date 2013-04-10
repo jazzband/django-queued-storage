@@ -41,7 +41,6 @@ class StorageTests(TestCase):
 
     def tearDown(self):
         settings.CELERY_ALWAYS_EAGER = self.old_celery_always_eager
-        models.retried = False
 
     def test_storage_init(self):
         """
@@ -212,13 +211,13 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('file')
         field.storage = storage
 
-        self.assertFalse(models.retried)
+        self.assertFalse(models.TestModel.retried)
 
         obj = models.TestModel(file=File(self.test_file))
         obj.save()
 
         self.assertFalse(obj.file.storage.result.get())
-        self.assertTrue(models.retried)
+        self.assertTrue(models.TestModel.retried)
 
     def test_delayed_storage(self):
         storage = QueuedStorage(
