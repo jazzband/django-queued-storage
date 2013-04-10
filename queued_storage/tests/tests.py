@@ -91,14 +91,14 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.test_task')
 
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
-        self.assertTrue(path.isfile(path.join(self.local_dir, obj.file.name)))
-        self.assertTrue(path.isfile(path.join(self.remote_dir, obj.file.name)))
+        self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
+        self.assertTrue(path.isfile(path.join(self.remote_dir, obj.testfile.name)))
 
     def test_storage_celery_save(self):
         """
@@ -110,19 +110,19 @@ class StorageTests(TestCase):
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir))
 
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
-        self.assertTrue(obj.file.storage.result.get())
-        self.assertTrue(path.isfile(path.join(self.local_dir, obj.file.name)))
+        self.assertTrue(obj.testfile.storage.result.get())
+        self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
         self.assertTrue(
-            path.isfile(path.join(self.remote_dir, obj.file.name)),
+            path.isfile(path.join(self.remote_dir, obj.testfile.name)),
             "Remote file is not available.")
-        self.assertFalse(storage.using_local(obj.file.name))
-        self.assertTrue(storage.using_remote(obj.file.name))
+        self.assertFalse(storage.using_local(obj.testfile.name))
+        self.assertTrue(storage.using_remote(obj.testfile.name))
 
         self.assertEqual(self.test_file_name,
                          storage.get_valid_name(self.test_file_name))
@@ -162,19 +162,19 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tasks.TransferAndDelete')
 
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
-        obj.file.storage.result.get()
+        obj.testfile.storage.result.get()
 
         self.assertFalse(
-            path.isfile(path.join(self.local_dir, obj.file.name)),
+            path.isfile(path.join(self.local_dir, obj.testfile.name)),
             "Local file is still available")
         self.assertTrue(
-            path.isfile(path.join(self.remote_dir, obj.file.name)),
+            path.isfile(path.join(self.remote_dir, obj.testfile.name)),
             "Remote file is not available.")
 
     def test_transfer_returns_boolean(self):
@@ -189,14 +189,14 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.NoneReturningTask')
 
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
         self.assertRaises(ValueError,
-                          obj.file.storage.result.get, propagate=True)
+                          obj.testfile.storage.result.get, propagate=True)
 
     def test_transfer_retried(self):
         """
@@ -208,15 +208,15 @@ class StorageTests(TestCase):
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir),
             task='queued_storage.tests.tasks.RetryingTask')
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
         self.assertFalse(models.TestModel.retried)
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
-        self.assertFalse(obj.file.storage.result.get())
+        self.assertFalse(obj.testfile.storage.result.get())
         self.assertTrue(models.TestModel.retried)
 
     def test_delayed_storage(self):
@@ -227,23 +227,23 @@ class StorageTests(TestCase):
             remote_options=dict(location=self.remote_dir),
             delayed=True)
 
-        field = models.TestModel._meta.get_field('file')
+        field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(file=File(self.test_file))
+        obj = models.TestModel(testfile=File(self.test_file))
         obj.save()
 
-        self.assertIsNone(getattr(obj.file.storage, 'result', None))
+        self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
 
         self.assertFalse(
-            path.isfile(path.join(self.remote_dir, obj.file.name)),
+            path.isfile(path.join(self.remote_dir, obj.testfile.name)),
             "Remote file should not be transferred automatically.")
 
-        result = obj.file.storage.transfer(obj.file.name)
+        result = obj.testfile.storage.transfer(obj.testfile.name)
         result.get()
 
         self.assertTrue(
-            path.isfile(path.join(self.remote_dir, obj.file.name)),
+            path.isfile(path.join(self.remote_dir, obj.testfile.name)),
             "Remote file is not available.")
 
     def test_remote_file_field(self):
@@ -260,7 +260,7 @@ class StorageTests(TestCase):
         obj = models.TestModel(remote=File(self.test_file))
         obj.save()
 
-        self.assertIsNone(getattr(obj.file.storage, 'result', None))
+        self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
 
         result = obj.remote.transfer()
         self.assertTrue(result)
