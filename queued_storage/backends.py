@@ -43,7 +43,7 @@ class QueuedStorage(object):
     #: The options of the local storage class, defined as a dictionary.
     local_options = None
 
-    #: The local storage class to use. A dotted path (e.g.
+    #: The remote storage class to use. A dotted path (e.g.
     #: ``'django.core.files.storage.FileSystemStorage'``).
     remote = None
 
@@ -59,7 +59,6 @@ class QueuedStorage(object):
     #: location automatically, but instead requires manual intervention by the
     #: user with the :meth:`~queued_storage.backends.QueuedStorage.transfer`
     #: method.
-    #:
     delayed = False
 
     #: The cache key prefix to use when saving the which storage backend
