@@ -12,6 +12,4 @@ INSTALLED_APPS = [
     'queued_storage.tests',
 ]
 
-TEST_RUNNER = 'discover_runner.DiscoverRunner'
-
 SECRET_KEY = 'top_secret'

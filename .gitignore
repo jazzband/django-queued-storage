@@ -4,3 +4,6 @@ dist/
 docs/_build
 *.egg
 .coverage
+*.pyc
+.project
+.pydevproject

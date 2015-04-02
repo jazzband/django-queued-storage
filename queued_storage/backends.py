@@ -6,7 +6,10 @@ from django.utils.functional import SimpleLazyObject
 from django.utils.http import urlquote
 
 from queued_storage.conf import settings
-from queued_storage.utils import import_attribute
+from queued_storage.utils import import_attribute, django_version
+
+if django_version()[1] >= 7:
+    from django.utils.deconstruct import deconstructible
 
 
 class LazyBackend(SimpleLazyObject):
@@ -322,6 +325,8 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
         return self.get_storage(name).modified_time(name)
+if django_version()[1] >= 7:
+    QueuedStorage = deconstructible(QueuedStorage)
 
 
 class QueuedFileSystemStorage(QueuedStorage):
