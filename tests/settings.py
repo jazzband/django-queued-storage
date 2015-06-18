@@ -9,9 +9,8 @@ DATABASES = {
 
 INSTALLED_APPS = [
     'queued_storage',
-    'queued_storage.tests',
+    'tests',
 ]
 
-TEST_RUNNER = 'discover_runner.DiscoverRunner'
 
 SECRET_KEY = 'top_secret'

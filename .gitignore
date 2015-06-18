@@ -1,6 +1,10 @@
-build/
-dist/
-*.egg-info/
-docs/_build
+*.egg-info
 *.egg
+test.db
+build/
+.tox/
+htmlcov/
+*.pyc
 .coverage
+.python-version
+.idea

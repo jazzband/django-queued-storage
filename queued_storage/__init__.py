@@ -1,5 +1,4 @@
-__version__ = "0.6"
+# flake8: noqa
 
-
-def version_hook(config):
-    config['metadata']['version'] = __version__
+__version__ = '0.7'
+__author__ = 'Jannis Leidel <jannis@leidel.info>'

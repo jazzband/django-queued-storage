@@ -89,7 +89,7 @@ class StorageTests(TestCase):
             remote='django.core.files.storage.FileSystemStorage',
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir),
-            task='queued_storage.tests.tasks.test_task')
+            task='tests.tasks.test_task')
 
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
@@ -187,7 +187,7 @@ class StorageTests(TestCase):
             remote='django.core.files.storage.FileSystemStorage',
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir),
-            task='queued_storage.tests.tasks.NoneReturningTask')
+            task='tests.tasks.NoneReturningTask')
 
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
@@ -207,7 +207,7 @@ class StorageTests(TestCase):
             remote='django.core.files.storage.FileSystemStorage',
             local_options=dict(location=self.local_dir),
             remote_options=dict(location=self.remote_dir),
-            task='queued_storage.tests.tasks.RetryingTask')
+            task='tests.tasks.RetryingTask')
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 

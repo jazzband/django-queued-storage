@@ -1,7 +1,9 @@
 flake8
-django-discover-runner
 coverage
 celery
 django-appconf
 SQLAlchemy
 anyjson
+pytest-django
+pytest-cov
+six
