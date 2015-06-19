@@ -4,9 +4,11 @@ import codecs
 from setuptools import setup
 
 
-def read(*parts):
-    return codecs.open(os.path.join(os.path.dirname(__file__), *parts)).read()
 
+def read(*parts):
+    filename = os.path.join(os.path.dirname(__file__), *parts)
+    with codecs.open(filename, encoding='utf-8') as fp:
+        return fp.read()
 
 def find_version(*file_paths):
     version_file = read(*file_paths)

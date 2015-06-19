@@ -1,6 +1,15 @@
 Changelog
 =========
 
+v0.7 (2015-06-20)
+-----------------
+
+- Dropping Django 1.6 support
+- Dropping python 2.6 support
+- Switched testing to use tox and py.test
+- Added python 3 support
+
+
 v0.6 (2012-05-24)
 -----------------
 
