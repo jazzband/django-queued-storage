@@ -181,6 +181,10 @@ class QueuedStorage(object):
         """
         cache_key = self.get_cache_key(name)
         cache.set(cache_key, False)
+
+        # Use a name that is available on both the local and remote storage
+        # systems and save locally.
+        name = self.get_available_name(name)
         name = self.local.save(name, content)
 
         # Pass on the cache key to prevent duplicate cache key creation,
@@ -219,14 +223,19 @@ class QueuedStorage(object):
 
     def get_available_name(self, name):
         """
-        Returns a filename that's free on the current storage system, and
-        available for new content to be written to.
+        Returns a filename that's free on both the local and remote storage
+        systems, and available for new content to be written to.
 
         :param name: file name
         :type name: str
         :rtype: str
         """
-        return self.get_storage(name).get_available_name(name)
+        local_available_name = self.local.get_available_name(name)
+        remote_available_name = self.remote.get_available_name(name)
+
+        if remote_available_name > local_available_name:
+            return remote_available_name
+        return local_available_name
 
     def path(self, name):
         """
