@@ -1,3 +1,4 @@
+import django
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
 
@@ -20,3 +21,7 @@ def import_attribute(import_path=None, options=None):
     except AttributeError:
         raise ImproperlyConfigured(
             'Module "%s" does not define a "%s" class.' % (module, classname))
+
+
+def django_version():
+    return [int(x) for x in django.get_version().split('.')]
