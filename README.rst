@@ -9,7 +9,7 @@ django-queued-storage
     :alt: Travis CI Status
     :target: https://travis-ci.org/jezdez/django-queued-storage
 
-.. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage.svg
+.. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage/develop.svg
    :alt: Coverage status
    :target: https://coveralls.io/r/jezdez/django-queued-storage
 
