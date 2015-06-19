@@ -1,5 +1,9 @@
 *.egg-info
 *.egg
+.coverage
+*.pyc
+.project
+.pydevproject
 test.db
 build/
 .tox/
