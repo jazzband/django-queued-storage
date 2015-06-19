@@ -7,11 +7,11 @@ django-queued-storage
 
 .. image:: https://img.shields.io/travis/jezdez/django-queued-storage.svg
     :alt: Travis CI Status
-    :target: https://travis-ci.org/jezdez/django-hosts
+    :target: https://travis-ci.org/jezdez/django-queued-storage
 
 .. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage.svg
    :alt: Coverage status
-   :target: https://coveralls.io/r/jezdez/django-hosts
+   :target: https://coveralls.io/r/jezdez/django-queued-storage
 
 .. image:: https://readthedocs.org/projects/django-queued-storage/badge/?version=latest&style=flat
    :alt: ReadTheDocs
