@@ -1,29 +1,29 @@
+sudo: no
 language: python
-python:
-  - 2.6
-  - 2.7
-  - 3.2
-  # - 3.3
-before_install:
-  - export PIP_USE_MIRRORS=true
-  - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
-  - export CELERY_CONFIG_MODULE=queued_storage.tests.celeryconfig
+cache:
+  # Apparently if you override the install command that silently disables the
+  # cache: pip support. This is less than ideal and I've opened up
+  # travis-ci/travis-ci#3239 to hopefully get that addressed. For now I'll
+  # manually add the pip cache directory to the build cache.
+  directories:
+    - ~/.cache/pip
+
 install:
-  - pip install -e .
-  - pip install -r requirements/tests.txt Django==$DJANGO
+  - pip wheel -r tests/requirements.txt
+  - pip install tox coveralls
 script:
-  - make test
+  - tox
 env:
-  - DJANGO=1.3.7
-  - DJANGO=1.4.5
-  - DJANGO=1.5.1
-matrix:
-  exclude:
-    - python: 3.2
-      env: DJANGO=1.4.5
-    - python: 3.2
-      env: DJANGO=1.3.7
-    - python: 3.3
-      env: DJANGO=1.4.5
-    - python: 3.3
-      env: DJANGO=1.3.7
+  global:
+    - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
+    - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
+  matrix:
+    - TOXENV=py27-django-17
+    - TOXENV=py27-django-18
+    - TOXENV=py32-django-17
+    - TOXENV=py32-django-18
+    - TOXENV=py33-django-17
+    - TOXENV=py33-django-18
+    - TOXENV=py34-django-17
+    - TOXENV=py34-django-18
+after_success: coveralls
