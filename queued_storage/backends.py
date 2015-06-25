@@ -94,7 +94,7 @@ class QueuedStorage(object):
         if backend is None:  # pragma: no cover
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
                                        "doesn't define a needed backend." %
-                                       (self, backend))
+                                       (self))
         if not isinstance(backend, six.string_types):
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
                                        "requires its backends to be "
