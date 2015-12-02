@@ -1,6 +1,13 @@
 Changelog
 =========
 
+v0.7.1 (2015-12-02)
+-------------------
+
+- Fix dependency on django-appconf.
+
+- Minor code cleanup.
+
 v0.7 (2015-12-02)
 -----------------
 
