@@ -14,3 +14,9 @@ INSTALLED_APPS = [
 
 
 SECRET_KEY = 'top_secret'
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}

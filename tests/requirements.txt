@@ -7,3 +7,4 @@ anyjson
 pytest-django
 pytest-cov
 six
+django<=1.9
