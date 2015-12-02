@@ -16,6 +16,7 @@ after_success: coveralls
 deploy:
   provider: pypi
   user: jazzband
+  distributions: "sdist bdist_wheel"
   on:
     tags: true
     repo: jazzband/django-queued-storage
