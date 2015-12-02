@@ -9,14 +9,14 @@ django-queued-storage
     :alt: Travis CI Status
     :target: https://travis-ci.org/jezdez/django-queued-storage
 
-.. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage/develop.svg
+.. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage/master.svg
    :alt: Coverage status
    :target: https://coveralls.io/r/jezdez/django-queued-storage
 
 .. image:: https://readthedocs.org/projects/django-queued-storage/badge/?version=latest&style=flat
    :alt: ReadTheDocs
    :target: http://django-hosts.readthedocs.org/en/latest/
-   
+
 .. image:: https://img.shields.io/pypi/l/django-queued-storage.svg
    :alt: License BSD
 
