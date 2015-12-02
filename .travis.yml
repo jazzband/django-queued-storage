@@ -1,29 +1,25 @@
-sudo: no
+sudo: false
 language: python
 cache:
-  # Apparently if you override the install command that silently disables the
-  # cache: pip support. This is less than ideal and I've opened up
-  # travis-ci/travis-ci#3239 to hopefully get that addressed. For now I'll
-  # manually add the pip cache directory to the build cache.
   directories:
-    - ~/.cache/pip
-
-install:
-  - pip wheel -r tests/requirements.txt
-  - pip install tox coveralls
-script:
-  - tox
+  - $HOME/.cache/pip
+install: pip install tox coveralls wheel
+script: tox
 env:
-  global:
-    - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
-    - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
-  matrix:
-    - TOXENV=py27-django-17
-    - TOXENV=py27-django-18
-    - TOXENV=py32-django-17
-    - TOXENV=py32-django-18
-    - TOXENV=py33-django-17
-    - TOXENV=py33-django-18
-    - TOXENV=py34-django-17
-    - TOXENV=py34-django-18
+  - TOXENV=py27-django-17
+  - TOXENV=py27-django-18
+  - TOXENV=py32-django-17
+  - TOXENV=py32-django-18
+  - TOXENV=py33-django-17
+  - TOXENV=py33-django-18
+  - TOXENV=py34-django-17
+  - TOXENV=py34-django-18
 after_success: coveralls
+deploy:
+  provider: pypi
+  user: jazzband
+  on:
+    tags: true
+    repo: jazzband/django-queued-storage
+  password:
+    secure: scGiNi9NXOdVaWzly7Tc65SBbC7iUVkcaO9ibBFfJq2QB0QM7es9QeXhpBz/biHbgCh40zuP8o2XmmsENxyaebb712k657YFS6fAcNmau7txCMOxDceQNoN/2OhSmGpYsegl8EdwBd4HsoB0fpLuq4bUg6OUkVkqR4pe4afq4O0=

@@ -12,3 +12,4 @@ htmlcov/
 .coverage
 .python-version
 .idea
+dist/
