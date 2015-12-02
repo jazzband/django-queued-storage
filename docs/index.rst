@@ -65,4 +65,4 @@ Issues
 For any bug reports and feature requests, please use the
 `Github issue tracker`_.
 
-.. _`Github issue tracker`: https://github.com/jezdez/django-queued-storage/issues
+.. _`Github issue tracker`: https://github.com/jazzband/django-queued-storage/issues
