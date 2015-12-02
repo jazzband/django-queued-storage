@@ -7,9 +7,9 @@ except ImportError:
     from celery.log import get_task_logger
 
 
-from queued_storage.conf import settings
-from queued_storage.signals import file_transferred
-from queued_storage.utils import import_attribute
+from .conf import settings
+from .signals import file_transferred
+from .utils import import_attribute
 
 logger = get_task_logger(name=__name__)
 

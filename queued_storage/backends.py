@@ -5,8 +5,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
 from django.utils.http import urlquote
 
-from queued_storage.conf import settings
-from queued_storage.utils import import_attribute, django_version
+from .conf import settings
+from .utils import import_attribute, django_version
 
 if django_version()[1] >= 7:
     from django.utils.deconstruct import deconstructible
