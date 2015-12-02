@@ -1,14 +1,15 @@
 Changelog
 =========
 
-v0.7 (2015-06-20)
+v0.7 (2015-12-02)
 -----------------
 
 - Dropping Django 1.6 support
-- Dropping python 2.6 support
+- Dropping Python 2.6 support
 - Switched testing to use tox and py.test
-- Added python 3 support
-
+- Added Python 3 support
+- Switched to using `setuptools_scm <https://pypi.python.org/pypi/setuptools_scm>`_
+- Transfered to Jazzband: https://github.com/jazzband/django-queued-storage
 
 v0.6 (2012-05-24)
 -----------------
