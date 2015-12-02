@@ -5,13 +5,13 @@ django-queued-storage
    :alt: PyPi page
    :target: https://pypi.python.org/pypi/django-queued-storage
 
-.. image:: https://img.shields.io/travis/jezdez/django-queued-storage.svg
+.. image:: https://img.shields.io/travis/jazzband/django-queued-storage.svg
     :alt: Travis CI Status
-    :target: https://travis-ci.org/jezdez/django-queued-storage
+    :target: https://travis-ci.org/jazzband/django-queued-storage
 
-.. image:: https://img.shields.io/coveralls/jezdez/django-queued-storage/master.svg
+.. image:: https://img.shields.io/coveralls/jazzband/django-queued-storage/master.svg
    :alt: Coverage status
-   :target: https://coveralls.io/r/jezdez/django-queued-storage
+   :target: https://coveralls.io/r/jazzband/django-queued-storage
 
 .. image:: https://readthedocs.org/projects/django-queued-storage/badge/?version=latest&style=flat
    :alt: ReadTheDocs

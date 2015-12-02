@@ -10,6 +10,7 @@ v0.7 (2015-12-02)
 - Added Python 3 support
 - Switched to using `setuptools_scm <https://pypi.python.org/pypi/setuptools_scm>`_
 - Transfered to Jazzband: https://github.com/jazzband/django-queued-storage
+- Tests can be found at: http://travis-ci.org/jazzband/django-queued-storage
 
 v0.6 (2012-05-24)
 -----------------
