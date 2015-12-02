@@ -20,7 +20,10 @@ setup(
     author='Jannis Leidel',
     author_email='jannis@leidel.info',
     packages=['queued_storage'],
-    install_requires=['six'],
+    install_requires=[
+        'six',
+        'django-appconf',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',
