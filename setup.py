@@ -1,5 +1,4 @@
 import os
-import re
 import codecs
 from setuptools import setup
 

@@ -1,5 +1,5 @@
 # flake8: noqa
-from setuptools_scm import get_version
+import pkg_resources
 
-__version__ = get_version()
+__version__ = pkg_resources.get_distribution('django-queued-storage').version
 __author__ = 'Jannis Leidel <jannis@leidel.info>'
