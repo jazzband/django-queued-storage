@@ -5,7 +5,7 @@ v0.7 (2015-12-02)
 -----------------
 
 - Dropping Django 1.6 support
-- Dropping Python 2.6 support
+- Dropping Python 2.6 and 3.2 support
 - Switched testing to use tox and py.test
 - Added Python 3 support
 - Switched to using `setuptools_scm <https://pypi.python.org/pypi/setuptools_scm>`_
