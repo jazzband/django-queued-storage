@@ -1,51 +1,39 @@
-import codecs
+import os
 import re
-from os import path
-from setuptools import setup, find_packages
+import codecs
+from setuptools import setup
 
 
 def read(*parts):
-    return codecs.open(path.join(path.dirname(__file__), *parts)).read()
-
-
-def find_version(*file_paths):
-    version_file = read(*file_paths)
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
-    if version_match:
-        return version_match.group(1)
-    raise RuntimeError("Unable to find version string.")
+    filename = os.path.join(os.path.dirname(__file__), *parts)
+    with codecs.open(filename, encoding='utf-8') as fp:
+        return fp.read()
 
 
 setup(
-    name='django-queued-storage',
-    version=find_version("queued_storage", "__init__.py"),
-    description='Provides a proxy for Django storage backends that allows you '
-                'to upload files locally and eventually serve them remotely',
-    long_description=read('README.rst'),
-    author='Sean Brant, Josh VanderLinden',
-    author_email='codekoala@gmail.com',
-    maintainer='Jannis Leidel',
-    maintainer_email='jannis@leidel.info',
-    url='http://django-queued-storage.rtfd.org',
-    packages=find_packages(),
+    name="django-queued-storage",
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
+    url='https://github.com/jazzband/django-queued-storage',
     license='BSD',
+    description="Queued remote storage for Django.",
+    long_description=read('README.rst'),
+    author='Jannis Leidel',
+    author_email='jannis@leidel.info',
+    packages=['queued_storage'],
+    install_requires=['six'],
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.5',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Topic :: Utilities',
-    ],
-    install_requires=[
-        'django-celery >= 2.3.3, < 3.0',
-        'django-appconf >= 0.4',
     ],
     zip_safe=False,
 )

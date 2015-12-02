@@ -1,7 +1,0 @@
-flake8
-django-discover-runner
-coverage
-django-storages
-django-celery
-boto
-django-appconf

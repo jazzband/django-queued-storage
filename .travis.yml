@@ -1,23 +1,25 @@
+sudo: false
 language: python
-python:
-  - "2.5"
-  - "2.6"
-  - "2.7"
-before_install:
-  - export PIP_USE_MIRRORS=true
-  - export PIP_INDEX_URL=https://simple.crate.io/
-  - export DJANGO_SETTINGS_MODULE=queued_storage.test_settings
-install:
-  - pip install -e .
-  - pip install -r requirements/tests.txt Django==$DJANGO
-before_script:
-  - flake8 queued_storage --ignore=E501
-script:
-  - coverage run --branch --source=queued_storage `which django-admin.py` test queued_storage
-  - coverage report --omit=queued_storage/test*
+cache:
+  directories:
+  - $HOME/.cache/pip
+install: pip install tox coveralls wheel
+script: tox
 env:
-  - DJANGO=1.3.1
-  - DJANGO=1.4
-branches:
-  only:
-    - develop
+  - TOXENV=py27-django-17
+  - TOXENV=py27-django-18
+  - TOXENV=py32-django-17
+  - TOXENV=py32-django-18
+  - TOXENV=py33-django-17
+  - TOXENV=py33-django-18
+  - TOXENV=py34-django-17
+  - TOXENV=py34-django-18
+after_success: coveralls
+deploy:
+  provider: pypi
+  user: jazzband
+  on:
+    tags: true
+    repo: jazzband/django-queued-storage
+  password:
+    secure: scGiNi9NXOdVaWzly7Tc65SBbC7iUVkcaO9ibBFfJq2QB0QM7es9QeXhpBz/biHbgCh40zuP8o2XmmsENxyaebb712k657YFS6fAcNmau7txCMOxDceQNoN/2OhSmGpYsegl8EdwBd4HsoB0fpLuq4bUg6OUkVkqR4pe4afq4O0=

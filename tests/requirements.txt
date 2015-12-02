@@ -1,0 +1,9 @@
+flake8
+coverage
+celery
+django-appconf
+SQLAlchemy
+anyjson
+pytest-django
+pytest-cov
+six
