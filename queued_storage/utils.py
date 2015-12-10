@@ -1,6 +1,7 @@
+from importlib import import_module
+
 import django
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
 
 
 def import_attribute(import_path=None, options=None):
