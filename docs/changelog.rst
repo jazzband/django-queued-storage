@@ -1,16 +1,39 @@
 Changelog
 =========
 
+v0.7.2 (2015-12-02)
+-------------------
+
+- Documentation config fixes.
+
+v0.7.1 (2015-12-02)
+-------------------
+
+- Fix dependency on django-appconf.
+
+- Minor code cleanup.
+
+v0.7 (2015-12-02)
+-----------------
+
+- Dropping Django 1.6 support
+- Dropping Python 2.6 and 3.2 support
+- Switched testing to use tox and py.test
+- Added Python 3 support
+- Switched to using `setuptools_scm <https://pypi.python.org/pypi/setuptools_scm>`_
+- Transfered to Jazzband: https://github.com/jazzband/django-queued-storage
+- Tests can be found at: http://travis-ci.org/jazzband/django-queued-storage
+
 v0.6 (2012-05-24)
 -----------------
 
-- Added `file_transferred` signal that is called right after a file has been
+- Added ``file_transferred`` signal that is called right after a file has been
   transfered from the local to the remote storage.
 
 - Switched to using `django-discover-runner`_ and Travis for testing:
   http://travis-ci.org/jezdez/django-queued-storage
 
-.. `django-discover-runner`: http://pypi.python.org/pypi/django-discover-runner
+.. _`django-discover-runner`: http://pypi.python.org/pypi/django-discover-runner
 
 v0.5 (2012-03-19)
 -----------------

@@ -1,0 +1,12 @@
+BROKER_TRANSPORT = "memory"
+CELERY_IGNORE_RESULT = True
+CELERYD_LOG_LEVEL = "DEBUG"
+CELERY_DEFAULT_QUEUE = "queued_storage"
+CELERY_RESULT_BACKEND = "database"
+CELERY_RESULT_DBURI = "sqlite://"
+
+CELERY_ALWAYS_EAGER = True
+CELERY_IGNORE_RESULT = True
+CELERY_IMPORTS = [
+    'queued_storage.tasks',
+]

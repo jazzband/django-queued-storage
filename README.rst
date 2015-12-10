@@ -1,9 +1,25 @@
 django-queued-storage
 =====================
 
-.. image:: https://secure.travis-ci.org/jezdez/django-queued-storage.png?branch=develop
-    :alt: Build Status
-    :target: http://travis-ci.org/jezdez/django-queued-storage
+.. image:: https://img.shields.io/pypi/v/django-queued-storage.svg
+   :alt: PyPi page
+   :target: https://pypi.python.org/pypi/django-queued-storage
+
+.. image:: https://img.shields.io/travis/jazzband/django-queued-storage.svg
+    :alt: Travis CI Status
+    :target: https://travis-ci.org/jazzband/django-queued-storage
+
+.. image:: https://img.shields.io/coveralls/jazzband/django-queued-storage/master.svg
+   :alt: Coverage status
+   :target: https://coveralls.io/r/jazzband/django-queued-storage
+
+.. image:: https://readthedocs.org/projects/django-queued-storage/badge/?version=latest&style=flat
+   :alt: ReadTheDocs
+   :target: http://django-queued-storage.readthedocs.org/en/latest/
+
+.. image:: https://img.shields.io/pypi/l/django-queued-storage.svg
+   :alt: License BSD
+
 
 This storage backend enables having a local and a remote storage
 backend. It will save any file locally and queue a task to transfer it

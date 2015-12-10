@@ -1,2 +1,4 @@
+celery
 django-celery
 django-appconf
+django<1.9

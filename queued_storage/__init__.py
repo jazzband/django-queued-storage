@@ -1,3 +1,4 @@
-# Version string following PEP 386
-# http://www.python.org/dev/peps/pep-0386/
-__version__ = "0.6"
+# flake8: noqa
+import pkg_resources
+
+__version__ = pkg_resources.get_distribution('django-queued-storage').version
