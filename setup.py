@@ -20,10 +20,6 @@ setup(
     author='Jannis Leidel',
     author_email='jannis@leidel.info',
     packages=['queued_storage'],
-    install_requires=[
-        'six',
-        'django-appconf',
-    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Framework :: Django',
@@ -35,6 +31,11 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Topic :: Utilities',
+    ],
+    install_requires=[
+        'six>=1.10.0',
+        'django-celery>=3.1,<3.2',
+        'django-appconf >= 0.4',
     ],
     zip_safe=False,
 )
