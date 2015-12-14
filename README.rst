@@ -28,6 +28,14 @@ somewhere else using Celery_.
 If the file is accessed before it's transferred, the local copy is
 returned.
 
+.. image:: https://jazzband.co/static/img/jazzband.svg
+   :target: https://jazzband.co/
+   :alt: Jazzband
+
+This is a `Jazzband <https://jazzband.co>`_ project. By contributing you
+agree to abide by the `Contributor Code of Conduct <https://jazzband.co/docs/conduct>`_
+and follow the `guidelines <https://jazzband.co/docs/guidelines>`_.
+
 Installation
 ------------
 
