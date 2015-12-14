@@ -13,3 +13,5 @@ htmlcov/
 .python-version
 .idea
 dist/
+.cache
+.eggs
