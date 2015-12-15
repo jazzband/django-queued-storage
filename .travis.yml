@@ -1,5 +1,11 @@
 sudo: false
 language: python
+addons:
+  apt:
+    sources:
+      - deadsnakes
+    packages:
+      - python3.5
 cache:
   directories:
   - $HOME/.cache/pip
