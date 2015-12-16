@@ -30,5 +30,6 @@ deploy:
   on:
     tags: true
     repo: jazzband/django-queued-storage
+    condition: "$TOXENV = py27-django-19"
   password:
     secure: scGiNi9NXOdVaWzly7Tc65SBbC7iUVkcaO9ibBFfJq2QB0QM7es9QeXhpBz/biHbgCh40zuP8o2XmmsENxyaebb712k657YFS6fAcNmau7txCMOxDceQNoN/2OhSmGpYsegl8EdwBd4HsoB0fpLuq4bUg6OUkVkqR4pe4afq4O0=
