@@ -1,14 +1,15 @@
 import six
 
+from django import VERSION
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
 from django.utils.http import urlquote
 
 from .conf import settings
-from .utils import import_attribute, django_version
+from .utils import import_attribute
 
-if django_version()[1] >= 7:
+if VERSION[1] >= 7:
     from django.utils.deconstruct import deconstructible
 
 

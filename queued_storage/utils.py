@@ -25,4 +25,4 @@ def import_attribute(import_path=None, options=None):
 
 
 def django_version():
-    return [int(x) for x in django.get_version().split('.')]
+    return django.VERSION
