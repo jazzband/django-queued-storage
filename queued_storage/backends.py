@@ -335,7 +335,7 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
         return self.get_storage(name).modified_time(name)
-if django_version()[1] >= 7:
+if VERSION[1] >= 7:
     QueuedStorage = deconstructible(QueuedStorage)
 
 
