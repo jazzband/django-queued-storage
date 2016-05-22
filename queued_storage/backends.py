@@ -1,3 +1,5 @@
+import os
+
 import six
 
 from django import VERSION
@@ -166,7 +168,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).open(name, mode)
 
-    def save(self, name, content):
+    def save(self, name, content, max_length=None):
         """
         Saves the given content with the given name using the local
         storage. If the :attr:`~queued_storage.backends.QueuedStorage.delayed`
@@ -178,6 +180,9 @@ class QueuedStorage(object):
         :type name: str
         :param content: content of the file specified by name
         :type content: :class:`~django:django.core.files.File`
+        :param max_length: The length of the filename will not exceed
+            `max_length`, if provided.
+        :type max_length: int
         :rtype: str
         """
         cache_key = self.get_cache_key(name)
@@ -185,7 +190,7 @@ class QueuedStorage(object):
 
         # Use a name that is available on both the local and remote storage
         # systems and save locally.
-        name = self.get_available_name(name)
+        name = self.get_available_name(name, max_length)
         name = self.local.save(name, content)
 
         # Pass on the cache key to prevent duplicate cache key creation,
@@ -222,7 +227,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).get_valid_name(name)
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         """
         Returns a filename that's free on both the local and remote storage
         systems, and available for new content to be written to.
@@ -237,6 +242,15 @@ class QueuedStorage(object):
         if remote_available_name > local_available_name:
             return remote_available_name
         return local_available_name
+
+    def generate_filename(self, filename):
+        """
+        Validate the filename by calling get_valid_name() and return a filename
+        to be passed to the save() method.
+        """
+        # `filename` may include a path as returned by FileField.upload_to.
+        dirname, filename = os.path.split(filename)
+        return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
     def path(self, name):
         """
