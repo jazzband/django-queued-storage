@@ -15,7 +15,7 @@ django-queued-storage
 
 .. image:: https://readthedocs.org/projects/django-queued-storage/badge/?version=latest&style=flat
    :alt: ReadTheDocs
-   :target: http://django-queued-storage.readthedocs.org/en/latest/
+   :target: https://django-queued-storage.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/pypi/l/django-queued-storage.svg
    :alt: License BSD
