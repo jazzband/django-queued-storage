@@ -368,7 +368,7 @@ class QueuedS3BotoStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``S3BotoStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.s3boto.S3BotoStorage', *args, **kwargs):
@@ -379,7 +379,7 @@ class QueuedCouchDBStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``CouchDBStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.couchdb.CouchDBStorage', *args, **kwargs):
@@ -390,7 +390,7 @@ class QueuedDatabaseStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``DatabaseStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.database.DatabaseStorage', *args, **kwargs):
@@ -401,7 +401,7 @@ class QueuedFTPStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``FTPStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.ftp.FTPStorage', *args, **kwargs):
@@ -412,7 +412,7 @@ class QueuedMogileFSStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``MogileFSStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.mogile.MogileFSStorage', *args, **kwargs):
@@ -423,7 +423,7 @@ class QueuedGridFSStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``GridFSStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.mongodb.GridFSStorage', *args, **kwargs):
@@ -434,7 +434,7 @@ class QueuedCloudFilesStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``CloudFilesStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.mosso.CloudFilesStorage', *args, **kwargs):
@@ -445,7 +445,7 @@ class QueuedSFTPStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
     subclass which uses the ``SFTPStorage`` storage of the
-    `django-storages <http://django-storages.readthedocs.org/>`_ app as
+    `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
     def __init__(self, remote='storages.backends.sftpstorage.SFTPStorage', *args, **kwargs):
