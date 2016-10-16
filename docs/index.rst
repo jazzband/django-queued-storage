@@ -20,7 +20,7 @@ This example is using django-storages_ for the remote backend::
     class MyModel(models.Model):
         image = ImageField(storage=queued_s3storage)
 
-.. _django-storages: http://code.welldev.org/django-storages/
+.. _django-storages: http://django-storages.readthedocs.io/en/latest/
 
 Settings
 --------
