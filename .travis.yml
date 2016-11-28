@@ -10,11 +10,11 @@ cache:
   - $HOME/.cache/pip
 install: pip install tox coveralls wheel
 script: tox -e py${TRAVIS_PYTHON_VERSION/./}-django-${DJANGO/./}
+env:
+  - DJANGO=1.7
+  - DJANGO=1.8
+  - DJANGO=1.9
 matrix:
-  env:
-    - DJANGO=1.7
-    - DJANGO=1.8
-    - DJANGO=1.9
   exclude:
     - python: 3.3
       env: DJANGO=1.9
