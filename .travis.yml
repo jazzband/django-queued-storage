@@ -1,27 +1,25 @@
 sudo: false
 language: python
-addons:
-  apt:
-    sources:
-      - deadsnakes
-    packages:
-      - python3.5
+python:
+  - 2.7
+  - 3.3
+  - 3.4
+  - 3.5
 cache:
   directories:
   - $HOME/.cache/pip
 install: pip install tox coveralls wheel
-script: tox
-env:
-  - TOXENV=py27-django-17
-  - TOXENV=py27-django-18
-  - TOXENV=py27-django-19
-  - TOXENV=py33-django-17
-  - TOXENV=py33-django-18
-  - TOXENV=py34-django-17
-  - TOXENV=py34-django-18
-  - TOXENV=py34-django-19
-  - TOXENV=py35-django-18
-  - TOXENV=py35-django-19
+script: tox -e py${TRAVIS_PYTHON_VERSION/./}-django-${DJANGO/./}
+matrix:
+  env:
+    - DJANGO=1.7
+    - DJANGO=1.8
+    - DJANGO=1.9
+  exclude:
+    - python: 3.3
+      env: DJANGO=1.9
+    - python: 3.5
+      env: DJANGO=1.7
 after_success: coveralls
 deploy:
   provider: pypi
@@ -30,6 +28,7 @@ deploy:
   on:
     tags: true
     repo: jazzband/django-queued-storage
-    condition: "$TOXENV = py27-django-19"
+    python: "2.7"
+    condition: "$DJANGO = 1.9"
   password:
     secure: scGiNi9NXOdVaWzly7Tc65SBbC7iUVkcaO9ibBFfJq2QB0QM7es9QeXhpBz/biHbgCh40zuP8o2XmmsENxyaebb712k657YFS6fAcNmau7txCMOxDceQNoN/2OhSmGpYsegl8EdwBd4HsoB0fpLuq4bUg6OUkVkqR4pe4afq4O0=
