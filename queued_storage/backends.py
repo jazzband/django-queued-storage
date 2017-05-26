@@ -236,8 +236,8 @@ class QueuedStorage(object):
         :type name: str
         :rtype: str
         """
-        local_available_name = self.local.get_available_name(name)
-        remote_available_name = self.remote.get_available_name(name)
+        local_available_name = self.local.get_available_name(name, max_length=max_length)
+        remote_available_name = self.remote.get_available_name(name, max_length=max_length)
 
         if remote_available_name > local_available_name:
             return remote_available_name
