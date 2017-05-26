@@ -13,6 +13,7 @@ from datetime import datetime
 
 from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
+from django.conf import settings as django_settings
 from django.test import TestCase
 
 from queued_storage.backends import QueuedStorage
@@ -27,8 +28,8 @@ class StorageTests(TestCase):
         self.old_celery_always_eager = getattr(
             settings, 'CELERY_ALWAYS_EAGER', False)
         settings.CELERY_ALWAYS_EAGER = True
-        self.local_dir = tempfile.mkdtemp()
-        self.remote_dir = tempfile.mkdtemp()
+        self.local_dir = tempfile.mkdtemp(dir=os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local'))
+        self.remote_dir = tempfile.mkdtemp(dir=os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local'))
         tmp_dir = tempfile.mkdtemp()
         self.test_file_name = 'queued_storage.txt'
         self.test_file_path = path.join(tmp_dir, self.test_file_name)
