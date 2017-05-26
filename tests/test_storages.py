@@ -40,6 +40,8 @@ class StorageTests(TestCase):
         django_settings.MEDIA_ROOT = tempfile.mkdtemp()
         self.local_dir = os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local')
         self.remote_dir = os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_remote')
+        os.mkdir(self.local_dir)
+        os.mkdir(self.remote_dir)
 
         self.addCleanup(shutil.rmtree, self.local_dir)
         self.addCleanup(shutil.rmtree, self.remote_dir)
