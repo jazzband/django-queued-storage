@@ -28,14 +28,19 @@ class StorageTests(TestCase):
         self.old_celery_always_eager = getattr(
             settings, 'CELERY_ALWAYS_EAGER', False)
         settings.CELERY_ALWAYS_EAGER = True
-        self.local_dir = tempfile.mkdtemp(dir=os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local'))
-        self.remote_dir = tempfile.mkdtemp(dir=os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local'))
         tmp_dir = tempfile.mkdtemp()
         self.test_file_name = 'queued_storage.txt'
         self.test_file_path = path.join(tmp_dir, self.test_file_name)
         with open(self.test_file_path, 'a') as test_file:
             test_file.write('test')
         self.test_file = open(self.test_file_path, 'r')
+
+        # Overriding MEDIA_ROOT for tests (probbaly undefined at that stage anyway)
+        # Starting with Django>=1.10, Storages APIs don't allow to write outside MEDIA_ROOT
+        django_settings.MEDIA_ROOT = tempfile.mkdtemp()
+        self.local_dir = os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_local')
+        self.remote_dir = os.path.join(django_settings.MEDIA_ROOT, 'storage_tests_remote')
+
         self.addCleanup(shutil.rmtree, self.local_dir)
         self.addCleanup(shutil.rmtree, self.remote_dir)
         self.addCleanup(shutil.rmtree, tmp_dir)
