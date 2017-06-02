@@ -349,6 +349,40 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
         return self.get_storage(name).modified_time(name)
+
+    def get_accessed_time(self, name):
+        """
+        Returns the last accessed time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.get_storage(name).accessed_time(name)
+
+    def get_created_time(self, name):
+        """
+        Returns the creation time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.get_storage(name).created_time(name)
+
+    def get_modified_time(self, name):
+        """
+        Returns the last modified time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.get_storage(name).modified_time(name)
+
 if VERSION[1] >= 7:
     QueuedStorage = deconstructible(QueuedStorage)
 
