@@ -1,33 +1,16 @@
 sudo: false
 language: python
-addons:
-  apt:
-    sources:
-      - deadsnakes
-    packages:
-      - python3.5
+python:
+ - "2.7"
+ - "3.3"
+ - "3.4"
+ - "3.5"
+ - "3.6"
 cache:
   directories:
   - $HOME/.cache/pip
-install: pip install tox coveralls wheel
+install: pip install tox coveralls wheel tox-travis
 script: tox
-env:
-  - TOXENV=py27-django-17
-  - TOXENV=py27-django-18
-  - TOXENV=py27-django-19
-  - TOXENV=py27-django-110
-  - TOXENV=py27-django-111
-  - TOXENV=py33-django-17
-  - TOXENV=py33-django-18
-  - TOXENV=py34-django-17
-  - TOXENV=py34-django-18
-  - TOXENV=py34-django-19
-  - TOXENV=py34-django-110
-  - TOXENV=py35-django-111
-  - TOXENV=py35-django-18
-  - TOXENV=py35-django-19
-  - TOXENV=py35-django-110
-  - TOXENV=py35-django-111
 after_success: coveralls
 deploy:
   provider: pypi
