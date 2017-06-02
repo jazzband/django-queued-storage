@@ -94,7 +94,8 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
@@ -113,8 +114,10 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
+
 
         self.assertTrue(obj.testfile.storage.result.get())
         self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
@@ -165,7 +168,8 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         obj.testfile.storage.result.get()
@@ -192,7 +196,8 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         self.assertRaises(ValueError,
@@ -213,7 +218,8 @@ class StorageTests(TestCase):
 
         self.assertFalse(models.TestModel.retried)
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         self.assertFalse(obj.testfile.storage.result.get())
@@ -230,7 +236,8 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
@@ -257,7 +264,8 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('remote')
         field.storage = storage
 
-        obj = models.TestModel(remote=File(self.test_file))
+        obj = models.TestModel()
+        obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
         self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
