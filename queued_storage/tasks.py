@@ -1,11 +1,11 @@
 from django.core.cache import cache
 
 from celery.task import Task
-
 try:
     from celery.utils.log import get_task_logger
 except ImportError:
     from celery.log import get_task_logger
+
 
 from .conf import settings
 from .signals import file_transferred
@@ -60,7 +60,9 @@ class Transfer(Task):
     #: :attr:`~queued_storage.conf.settings.QUEUED_STORAGE_RETRY_DELAY`)
     default_retry_delay = settings.QUEUED_STORAGE_RETRY_DELAY
 
-    def run(self, name, cache_key, local, remote, **kwargs):
+    def run(self, name, cache_key,
+            local_path, remote_path,
+            local_options, remote_options, **kwargs):
         """
         The main work horse of the transfer task. Calls the transfer
         method with the local and remote storage backends as given
@@ -80,6 +82,8 @@ class Transfer(Task):
         :type cache_key: str
         :rtype: task result
         """
+        local = import_attribute(local_path)(**local_options)
+        remote = import_attribute(remote_path)(**remote_options)
         result = self.transfer(name, local, remote, **kwargs)
 
         if result is True:
@@ -87,7 +91,8 @@ class Transfer(Task):
             file_transferred.send(sender=self.__class__,
                                   name=name, local=local, remote=remote)
         elif result is False:
-            args = [name, cache_key, local, remote]
+            args = [name, cache_key, local_path,
+                    remote_path, local_options, remote_options]
             self.retry(args=args, kwargs=kwargs)
         else:
             raise ValueError("Task '%s' did not return True/False but %s" %
@@ -122,9 +127,9 @@ class TransferAndDelete(Transfer):
     file with the given name using the local storage if the transfer
     was successful.
     """
-
     def transfer(self, name, local, remote, **kwargs):
-        result = super(TransferAndDelete, self).transfer(name, local, remote, **kwargs)
+        result = super(TransferAndDelete, self).transfer(name, local,
+                                                         remote, **kwargs)
         if result:
             local.delete(name)
         return result

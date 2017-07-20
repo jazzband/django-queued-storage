@@ -7,18 +7,11 @@ class QueuedFieldFile(FieldFile):
     additional method to transfer the file to the remote storage using the
     backend's ``transfer`` method.
     """
-
     def transfer(self):
         """
         Transfers the file using the storage backend.
         """
         return self.storage.transfer(self.name)
-
-    def is_stored_locally(self):
-        return self.storage.using_local(self.name)
-
-    def is_stored_remotely(self):
-        return self.storage.using_remote(self.name)
 
 
 class QueuedFileField(FileField):
