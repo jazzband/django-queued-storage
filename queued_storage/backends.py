@@ -407,18 +407,6 @@ class QueuedFileSystemStorage(QueuedStorage):
         super(QueuedFileSystemStorage, self).__init__(local=local, *args, **kwargs)
 
 
-class QueuedS3Boto3Storage(QueuedFileSystemStorage):
-    """
-    A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
-    subclass which uses the ``S3Boto3Storage`` storage of the
-    `django-storages <https://django-storages.readthedocs.io/>`_ app as
-    the remote storage.
-    """
-
-    def __init__(self, remote='storages.backends.s3boto3.S3Boto3Storage', *args, **kwargs):
-        super(QueuedS3Boto3Storage, self).__init__(remote=remote, *args, **kwargs)
-
-
 class QueuedS3BotoStorage(QueuedFileSystemStorage):
     """
     A custom :class:`~queued_storage.backends.QueuedFileSystemStorage`
