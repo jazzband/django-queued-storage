@@ -47,5 +47,5 @@ Configuration
 -  Add ``'queued_storage'`` to your ``INSTALLED_APPS`` setting
 
 .. _django-celery: https://github.com/ask/django-celery
-.. _`caching backend`: https://docs.djangoproject.com/en/1.3/topics/cache/#setting-up-the-cache
+.. _`caching backend`: https://docs.djangoproject.com/en/1.10/topics/cache/#setting-up-the-cache
 .. _Celery:  http://celeryproject.org/
