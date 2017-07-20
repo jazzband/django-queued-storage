@@ -1,19 +1,21 @@
+import os
+
 import six
 
+from django import VERSION
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.functional import SimpleLazyObject
 from django.utils.http import urlquote
 
 from .conf import settings
-from .utils import import_attribute, django_version
+from .utils import import_attribute
 
-if django_version()[1] >= 7:
+if VERSION[1] >= 7:
     from django.utils.deconstruct import deconstructible
 
 
 class LazyBackend(SimpleLazyObject):
-
     def __init__(self, import_path, options):
         backend = import_attribute(import_path)
         super(LazyBackend, self).__init__(lambda: backend(**options))
@@ -83,6 +85,8 @@ class QueuedStorage(object):
         self.remote = self._load_backend(backend=self.remote_path,
                                          options=self.remote_options)
 
+        # Using the mis-named _load_backend method to get the task instance from the task name string (both self.task...),
+        # using the tricky method import_attribute. Hard to read. Hard to test...
         self.task = self._load_backend(backend=task or self.task,
                                        handler=import_attribute)
         if delayed is not None:
@@ -93,8 +97,7 @@ class QueuedStorage(object):
     def _load_backend(self, backend=None, options=None, handler=LazyBackend):
         if backend is None:  # pragma: no cover
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
-                                       "doesn't define a needed backend." %
-                                       (self))
+                                       "doesn't define a needed backend." % (self))
         if not isinstance(backend, six.string_types):
             raise ImproperlyConfigured("The QueuedStorage class '%s' "
                                        "requires its backends to be "
@@ -165,7 +168,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).open(name, mode)
 
-    def save(self, name, content):
+    def save(self, name, content, max_length=None):
         """
         Saves the given content with the given name using the local
         storage. If the :attr:`~queued_storage.backends.QueuedStorage.delayed`
@@ -177,6 +180,9 @@ class QueuedStorage(object):
         :type name: str
         :param content: content of the file specified by name
         :type content: :class:`~django:django.core.files.File`
+        :param max_length: The length of the filename will not exceed
+            `max_length`, if provided.
+        :type max_length: int
         :rtype: str
         """
         cache_key = self.get_cache_key(name)
@@ -184,7 +190,7 @@ class QueuedStorage(object):
 
         # Use a name that is available on both the local and remote storage
         # systems and save locally.
-        name = self.get_available_name(name)
+        name = self.get_available_name(name, max_length)
         name = self.local.save(name, content)
 
         # Pass on the cache key to prevent duplicate cache key creation,
@@ -206,9 +212,7 @@ class QueuedStorage(object):
         """
         if cache_key is None:
             cache_key = self.get_cache_key(name)
-        return self.task.delay(name, cache_key,
-                               self.local_path, self.remote_path,
-                               self.local_options, self.remote_options)
+        return self.task.delay(name, cache_key, self.local, self.remote)
 
     def get_valid_name(self, name):
         """
@@ -221,7 +225,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).get_valid_name(name)
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         """
         Returns a filename that's free on both the local and remote storage
         systems, and available for new content to be written to.
@@ -236,6 +240,15 @@ class QueuedStorage(object):
         if remote_available_name > local_available_name:
             return remote_available_name
         return local_available_name
+
+    def generate_filename(self, filename):
+        """
+        Validate the filename by calling get_valid_name() and return a filename
+        to be passed to the save() method.
+        """
+        # `filename` may include a path as returned by FileField.upload_to.
+        dirname, filename = os.path.split(filename)
+        return os.path.normpath(os.path.join(dirname, self.get_valid_name(filename)))
 
     def path(self, name):
         """
@@ -311,7 +324,21 @@ class QueuedStorage(object):
         :type name: str
         :rtype: :class:`~python:datetime.datetime`
         """
-        return self.get_storage(name).accessed_time(name)
+        if VERSION[1] >= 10:
+            return self.get_storage(name).get_accessed_time(name)
+        else:
+            return self.get_storage(name).accessed_time(name)
+
+    def get_accessed_time(self, name):
+        """
+        Returns the last accessed time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.accessed_time(name)
 
     def created_time(self, name):
         """
@@ -322,7 +349,21 @@ class QueuedStorage(object):
         :type name: str
         :rtype: :class:`~python:datetime.datetime`
         """
-        return self.get_storage(name).created_time(name)
+        if VERSION[1] >= 10:
+            return self.get_storage(name).get_created_time(name)
+        else:
+            return self.get_storage(name).created_time(name)
+
+    def get_created_time(self, name):
+        """
+        Returns the creation time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.created_time(name)
 
     def modified_time(self, name):
         """
@@ -333,8 +374,24 @@ class QueuedStorage(object):
         :type name: str
         :rtype: :class:`~python:datetime.datetime`
         """
-        return self.get_storage(name).modified_time(name)
-if django_version()[1] >= 7:
+        if VERSION[1] >= 10:
+            return self.get_storage(name).get_modified_time(name)
+        else:
+            return self.get_storage(name).modified_time(name)
+
+    def get_modified_time(self, name):
+        """
+        Returns the last modified time (as datetime object) of the file
+        specified by name.
+
+        :param name: file name
+        :type name: str
+        :rtype: :class:`~python:datetime.datetime`
+        """
+        return self.modified_time(name)
+
+
+if VERSION[1] >= 7:
     QueuedStorage = deconstructible(QueuedStorage)
 
 
@@ -345,6 +402,7 @@ class QueuedFileSystemStorage(QueuedStorage):
     :class:`~django:django.core.files.storage.FileSystemStorage` as the local
     storage.
     """
+
     def __init__(self, local='django.core.files.storage.FileSystemStorage', *args, **kwargs):
         super(QueuedFileSystemStorage, self).__init__(local=local, *args, **kwargs)
 
@@ -356,6 +414,7 @@ class QueuedS3BotoStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.s3boto.S3BotoStorage', *args, **kwargs):
         super(QueuedS3BotoStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -367,6 +426,7 @@ class QueuedCouchDBStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.couchdb.CouchDBStorage', *args, **kwargs):
         super(QueuedCouchDBStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -378,6 +438,7 @@ class QueuedDatabaseStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.database.DatabaseStorage', *args, **kwargs):
         super(QueuedDatabaseStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -389,6 +450,7 @@ class QueuedFTPStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.ftp.FTPStorage', *args, **kwargs):
         super(QueuedFTPStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -400,6 +462,7 @@ class QueuedMogileFSStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.mogile.MogileFSStorage', *args, **kwargs):
         super(QueuedMogileFSStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -411,6 +474,7 @@ class QueuedGridFSStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.mongodb.GridFSStorage', *args, **kwargs):
         super(QueuedGridFSStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -422,6 +486,7 @@ class QueuedCloudFilesStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.mosso.CloudFilesStorage', *args, **kwargs):
         super(QueuedCloudFilesStorage, self).__init__(remote=remote, *args, **kwargs)
 
@@ -433,5 +498,6 @@ class QueuedSFTPStorage(QueuedFileSystemStorage):
     `django-storages <https://django-storages.readthedocs.io/>`_ app as
     the remote storage.
     """
+
     def __init__(self, remote='storages.backends.sftpstorage.SFTPStorage', *args, **kwargs):
         super(QueuedSFTPStorage, self).__init__(remote=remote, *args, **kwargs)
