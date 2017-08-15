@@ -10,7 +10,9 @@ import shutil
 import tempfile
 from os import path
 from datetime import datetime
+from packaging import version
 
+import django
 from django.core.files.base import File
 from django.core.files.storage import FileSystemStorage, Storage
 from django.test import TestCase
@@ -19,6 +21,8 @@ from queued_storage.backends import QueuedStorage
 from queued_storage.conf import settings
 
 from . import models
+
+DJANGO_VERSION = django.get_version()
 
 
 class StorageTests(TestCase):
@@ -140,9 +144,15 @@ class StorageTests(TestCase):
         self.assertEqual(storage.size(subdir_path),
                          os.stat(self.test_file_path).st_size)
         self.assertEqual(storage.url(self.test_file_name), self.test_file_name)
-        self.assertIsInstance(storage.accessed_time(subdir_path), datetime)
-        self.assertIsInstance(storage.created_time(subdir_path), datetime)
-        self.assertIsInstance(storage.modified_time(subdir_path), datetime)
+
+        if version.parse(DJANGO_VERSION) <= version.parse('2'):
+            self.assertIsInstance(storage.accessed_time(subdir_path), datetime)
+            self.assertIsInstance(storage.created_time(subdir_path), datetime)
+            self.assertIsInstance(storage.modified_time(subdir_path), datetime)
+        else:
+            self.assertIsInstance(storage.get_accessed_time(subdir_path), datetime)
+            self.assertIsInstance(storage.get_created_time(subdir_path), datetime)
+            self.assertIsInstance(storage.get_modified_time(subdir_path), datetime)
 
         subdir_name = 'queued_storage_2.txt'
         testfile = storage.open(subdir_name, 'w')
@@ -263,11 +273,9 @@ class StorageTests(TestCase):
 
         field = models.TestModel._meta.get_field('remote')
         field.storage = storage
-
         obj = models.TestModel()
-        obj.testfile.save(self.test_file_name, File(self.test_file))
+        obj.remote.save(self.test_file_name, File(self.test_file))
         obj.save()
-
         self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
 
         result = obj.remote.transfer()
