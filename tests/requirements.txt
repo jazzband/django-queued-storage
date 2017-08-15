@@ -5,3 +5,8 @@ SQLAlchemy
 anyjson
 pytest-django
 pytest-cov
+pytest-sugar
+pytest-assume
+pytest-cov
+pytest-flake8
+
