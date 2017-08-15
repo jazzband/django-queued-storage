@@ -1,6 +1,5 @@
 from importlib import import_module
 
-import django
 from django.core.exceptions import ImproperlyConfigured
 
 
@@ -24,5 +23,3 @@ def import_attribute(import_path=None, options=None):
             'Module "%s" does not define a "%s" class.' % (module, classname))
 
 
-def django_version():
-    return [int(x) for x in django.get_version().split('.')]

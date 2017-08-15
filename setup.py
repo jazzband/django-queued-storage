@@ -1,5 +1,5 @@
-import os
 import codecs
+import os
 from setuptools import setup
 
 
@@ -36,6 +36,7 @@ setup(
         'six>=1.10.0',
         'django-celery>=3.1,<3.2',
         'django-appconf >= 0.4',
+        'packaging==16.8',
     ],
     zip_safe=False,
 )
