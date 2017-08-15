@@ -9,19 +9,8 @@ addons:
 cache:
   directories:
   - $HOME/.cache/pip
-install: pip install tox coveralls wheel
+install: pip install tox travis-tox coveralls wheel
 script: tox
-env:
-  - TOXENV=py27-django-17
-  - TOXENV=py27-django-18
-  - TOXENV=py27-django-19
-  - TOXENV=py33-django-17
-  - TOXENV=py33-django-18
-  - TOXENV=py34-django-17
-  - TOXENV=py34-django-18
-  - TOXENV=py34-django-19
-  - TOXENV=py35-django-18
-  - TOXENV=py35-django-19
 after_success: coveralls
 deploy:
   provider: pypi
@@ -30,6 +19,6 @@ deploy:
   on:
     tags: true
     repo: jazzband/django-queued-storage
-    condition: "$TOXENV = py27-django-19"
+    condition: "$TOXENV = py27-django-110"
   password:
     secure: scGiNi9NXOdVaWzly7Tc65SBbC7iUVkcaO9ibBFfJq2QB0QM7es9QeXhpBz/biHbgCh40zuP8o2XmmsENxyaebb712k657YFS6fAcNmau7txCMOxDceQNoN/2OhSmGpYsegl8EdwBd4HsoB0fpLuq4bUg6OUkVkqR4pe4afq4O0=
