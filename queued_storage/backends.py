@@ -317,6 +317,10 @@ class QueuedStorage(object):
         return self.get_storage(name).url(name)
 
     def get_accessed_time(self, name):
+        """
+        Return the last accessed time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
         return self.accessed_time(self.name)
 
     def accessed_time(self, name):
@@ -331,6 +335,10 @@ class QueuedStorage(object):
         return self.get_storage(name).accessed_time(name)
 
     def get_created_time(self, name):
+        """
+        Return the creation time (as a datetime) of the file specified by name.
+        The datetime will be timezone-aware if USE_TZ=True.
+        """
         return self.created_time(self, name)
 
     def created_time(self, name):
@@ -345,6 +353,10 @@ class QueuedStorage(object):
         return self.get_storage(name).created_time(name)
 
     def get_modified_time(self, name):
+        """
+        Return the last modified time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
         return self.modified_time(self, name)
 
     def modified_time(self, name):
