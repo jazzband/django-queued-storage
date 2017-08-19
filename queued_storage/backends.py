@@ -230,8 +230,7 @@ class QueuedStorage(object):
         :type name: str
         :rtype: str
         """
-        valid_name =  self.get_storage(name).get_valid_name(name)
-        return valid_name
+        return self.get_storage(name).get_valid_name(name)
 
     def get_available_name(self, name, max_length=None):
         """

@@ -21,7 +21,6 @@ from queued_storage.conf import settings
 from . import models
 
 
-
 class StorageTests(TestCase):
 
     def setUp(self):
