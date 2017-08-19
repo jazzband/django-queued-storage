@@ -182,7 +182,6 @@ class QueuedStorage(object):
         """
         cache_key = self.get_cache_key(name)
         cache.set(cache_key, False)
-        print('fuck {}'.format(name))
 
         # Use a name that is available on both the local and remote storage
         # systems and save locally.
