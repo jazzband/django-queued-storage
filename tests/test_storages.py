@@ -21,6 +21,7 @@ from queued_storage.conf import settings
 from . import models
 
 
+
 class StorageTests(TestCase):
 
     def setUp(self):
@@ -41,6 +42,14 @@ class StorageTests(TestCase):
 
     def tearDown(self):
         settings.CELERY_ALWAYS_EAGER = self.old_celery_always_eager
+
+    def create_test_obj(self, remote=False):
+        if remote:
+            obj = models.TestModel(remote=File(self.test_file, name=self.test_file_name))
+        else:
+            obj = models.TestModel(testfile=File(self.test_file, name=self.test_file_name))
+        obj.save()
+        return obj
 
     def test_storage_init(self):
         """
@@ -94,8 +103,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
         self.assertTrue(path.isfile(path.join(self.remote_dir, obj.testfile.name)))
@@ -113,8 +121,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         self.assertTrue(obj.testfile.storage.result.get())
         self.assertTrue(path.isfile(path.join(self.local_dir, obj.testfile.name)))
@@ -165,8 +172,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         obj.testfile.storage.result.get()
 
@@ -192,8 +198,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         self.assertRaises(ValueError,
                           obj.testfile.storage.result.get, propagate=True)
@@ -213,8 +218,7 @@ class StorageTests(TestCase):
 
         self.assertFalse(models.TestModel.retried)
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         self.assertFalse(obj.testfile.storage.result.get())
         self.assertTrue(models.TestModel.retried)
@@ -230,8 +234,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('testfile')
         field.storage = storage
 
-        obj = models.TestModel(testfile=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj()
 
         self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
 
@@ -257,8 +260,7 @@ class StorageTests(TestCase):
         field = models.TestModel._meta.get_field('remote')
         field.storage = storage
 
-        obj = models.TestModel(remote=File(self.test_file))
-        obj.save()
+        obj = self.create_test_obj(True)
 
         self.assertIsNone(getattr(obj.testfile.storage, 'result', None))
 
