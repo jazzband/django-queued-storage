@@ -1,4 +1,5 @@
 import six
+import os
 
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
@@ -165,7 +166,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).open(name, mode)
 
-    def save(self, name, content):
+    def save(self, name, content, max_length=None):
         """
         Saves the given content with the given name using the local
         storage. If the :attr:`~queued_storage.backends.QueuedStorage.delayed`
@@ -184,7 +185,7 @@ class QueuedStorage(object):
 
         # Use a name that is available on both the local and remote storage
         # systems and save locally.
-        name = self.get_available_name(name)
+        name = self.get_available_name(name, max_length=max_length)
         name = self.local.save(name, content)
 
         # Pass on the cache key to prevent duplicate cache key creation,
@@ -210,6 +211,13 @@ class QueuedStorage(object):
                                self.local_path, self.remote_path,
                                self.local_options, self.remote_options)
 
+    def generate_filename(self, filename):
+        """
+        Validate the filename by calling get_valid_name() and return a filename
+        to be passed to the save() method.
+        """
+        return self.local.generate_filename(filename)
+
     def get_valid_name(self, name):
         """
         Returns a filename, based on the provided filename, that's suitable
@@ -221,7 +229,7 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).get_valid_name(name)
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length=None):
         """
         Returns a filename that's free on both the local and remote storage
         systems, and available for new content to be written to.
@@ -230,8 +238,12 @@ class QueuedStorage(object):
         :type name: str
         :rtype: str
         """
-        local_available_name = self.local.get_available_name(name)
-        remote_available_name = self.remote.get_available_name(name)
+        if max_length:
+            local_available_name = self.local.get_available_name(name, max_length=max_length)
+            remote_available_name = self.remote.get_available_name(name, max_length=max_length)
+        else:
+            local_available_name = self.local.get_available_name(name)
+            remote_available_name = self.remote.get_available_name(name)
 
         if remote_available_name > local_available_name:
             return remote_available_name
@@ -302,6 +314,13 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).url(name)
 
+    def get_accessed_time(self, name):
+        """
+        Return the last accessed time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
+        return self.accessed_time(self.name)
+
     def accessed_time(self, name):
         """
         Returns the last accessed time (as datetime object) of the file
@@ -313,6 +332,13 @@ class QueuedStorage(object):
         """
         return self.get_storage(name).accessed_time(name)
 
+    def get_created_time(self, name):
+        """
+        Return the creation time (as a datetime) of the file specified by name.
+        The datetime will be timezone-aware if USE_TZ=True.
+        """
+        return self.created_time(self, name)
+
     def created_time(self, name):
         """
         Returns the creation time (as datetime object) of the file
@@ -323,6 +349,13 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
         return self.get_storage(name).created_time(name)
+
+    def get_modified_time(self, name):
+        """
+        Return the last modified time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
+        return self.modified_time(self, name)
 
     def modified_time(self, name):
         """
