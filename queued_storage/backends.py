@@ -192,7 +192,7 @@ class QueuedStorage(object):
         # systems and save locally.
         name = self.get_available_name(name)
         try:
-            name = self.local.save(name, content, max_length=None)
+            name = self.local.save(name, content, max_length=max_length)
         except TypeError:
             # Django < 1.10
             name = self.local.save(name, content)
@@ -355,7 +355,7 @@ class QueuedStorage(object):
         :type name: str
         :rtype: :class:`~python:datetime.datetime`
         """
-        return self.get_storage(name).accessed_time(name)
+        return self.get_storage(name).get_accessed_time(name)
 
     def get_created_time(self, name):
         """
@@ -368,7 +368,7 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
 
-        return self.get_storage(name).created_time(name)
+        return self.get_storage(name).get_created_time(name)
 
     def get_modified_time(self, name):
         """
@@ -381,7 +381,7 @@ class QueuedStorage(object):
         :rtype: :class:`~python:datetime.datetime`
         """
 
-        return self.get_storage(name).modified_time(name)
+        return self.get_storage(name).get_modified_time(name)
 
     def generate_filename(self, filename):
         return self.get_storage(filename).generate_filename(filename)

@@ -11,6 +11,7 @@ import tempfile
 from os import path
 from datetime import datetime
 from packaging import version
+from packaging.specifiers import SpecifierSet
 
 import django
 from django.core.files.base import File
@@ -145,7 +146,7 @@ class StorageTests(TestCase):
                          os.stat(self.test_file_path).st_size)
         self.assertEqual(storage.url(self.test_file_name), self.test_file_name)
 
-        if version.parse(DJANGO_VERSION) <= version.parse('2'):
+        if version.parse(DJANGO_VERSION) in SpecifierSet("<=2.0"):
             self.assertIsInstance(storage.accessed_time(subdir_path), datetime)
             self.assertIsInstance(storage.created_time(subdir_path), datetime)
             self.assertIsInstance(storage.modified_time(subdir_path), datetime)
