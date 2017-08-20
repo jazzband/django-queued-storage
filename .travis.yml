@@ -46,7 +46,7 @@ matrix:
     - python: "3.6"
       env: TOXENV=py36-django-dev DEV=True
 
-    allow_failures:
+  allow_failures:
     - env: DEV=True
 
 install: pip install tox tox-travis coveralls wheel
