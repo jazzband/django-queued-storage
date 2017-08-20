@@ -41,13 +41,14 @@ matrix:
     - python: "3.5"
       env: TOXENV=py35-django-111-fix
     - python: "3.5"
-      env: TOXENV=py35-django-dev DEV=True
+      env: TOXENV=py35-django-dev
 
     - python: "3.6"
-      env: TOXENV=py36-django-dev DEV=True
+      env: TOXENV=py36-django-dev
 
   allow_failures:
-    - env: DEV=True
+    - env: TOXENV=py35-django-dev
+    - env: TOXENV=py36-django-dev
 
 install: pip install tox tox-travis coveralls wheel
 script: tox
