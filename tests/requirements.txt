@@ -3,7 +3,6 @@ coverage
 celery
 SQLAlchemy
 anyjson
-pytest-django
 pytest-cov
 pytest-sugar
 pytest-assume

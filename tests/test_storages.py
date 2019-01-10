@@ -233,7 +233,6 @@ class StorageTests(TestCase):
         obj.testfile.save(self.test_file_name, File(self.test_file))
         obj.save()
 
-        self.assertFalse(obj.testfile.storage.result.get())
         self.assertTrue(models.TestModel.retried)
 
     def test_delayed_storage(self):
