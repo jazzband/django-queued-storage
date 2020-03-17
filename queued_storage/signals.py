@@ -1,9 +1,9 @@
 """
-django-queued-storage ships with a signal fired after a file was transfered
+django-queued-storage ships with a signal fired after a file was transferred
 by the Transfer task. It provides the name of the file, the local and the
 remote storage backend instances as arguments to connected signal callbacks.
 
-Imagine you'd want to post-process the file that has been transfered from
+Imagine you'd want to post-process the file that has been transferred from
 the local to the remote storage, e.g. add it to a log model to always know
 what exactly happened. All you'd have to do is to connect a callback to
 the ``file_transferred`` signal::
